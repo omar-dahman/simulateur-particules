@@ -15,7 +15,7 @@
 #include "particules.h" // for the type "particule" in get_particule function
 
 /**
- * \typedef env
+ * \typedef \a env
  * \brief   Type for an \b environment
  * \details This type is used for variables representing an environment of particles
  */
