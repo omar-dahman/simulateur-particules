@@ -1,22 +1,23 @@
-OPTIONS = -Wall -Wextra -std=c99
-CC = gcc
-EXECUTABLE = simparticles
 SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
-HEADERS = headers
+HEADERSDIR = headers
+
+OPTIONS = -Wall -Wextra -std=c99 -I$(HEADERSDIR)
+CC = gcc
+EXECUTABLE = simparticles
+
+HEADERS = $(wildcard $(HEADERSDIR)/*.h)
+OBJECTS_NEEDED = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(wildcard $(SRCDIR)/*.c))
 
 # Variable to modify to enable or disable debug : leave empty or add -g
 DEBUG = -g
-# Variable holding the needed objects for linking
-OBJECTS_NEEDED = #TO ADD HERE, name is to be $(OBJDIR)/myfile.o
+# Variable to add library if needed, like maths with -lm
+LIBRARIES = # -lm
 
-.PHONY: all setup_dirs clean mrproper valgrind
+.PHONY: all clean mrproper build run valgrind
 
 all: build run
-
-setup_dirs:
-	mkdir -p $(OBJDIR) $(BINDIR)
 
 clean:
 	@rm -rf $(OBJDIR)/*
@@ -24,7 +25,7 @@ clean:
 mrproper:
 	@rm -rf $(BINDIR)/*
 
-build: setup_dirs
+build:
 	@echo "Compiling..."
 	@make $(BINDIR)/$(EXECUTABLE)
 
@@ -36,10 +37,8 @@ valgrind: $(BINDIR)/$(EXECUTABLE)
 
 $(BINDIR)/$(EXECUTABLE) : $(OBJECTS_NEEDED)
 	@mkdir -p $(BINDIR)
-	$(CC) $(OPTIONS) $(DEBUG) -o $@ $^
+	$(CC) $(OPTIONS) $(DEBUG) -o $@ $^ $(LIBRARIES)
 
-$(OBJDIR)/%.o : $(SRCDIR)/%.c
+$(OBJDIR)/%.o : $(SRCDIR)/%.c $(HEADERS)
 	@mkdir -p $(OBJDIR)
 	$(CC) $(OPTIONS) $(DEBUG) -c -o $@ $<
-
-# TODO : add header tracking
