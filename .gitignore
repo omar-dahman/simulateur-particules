@@ -131,3 +131,5 @@ tags
 
 obj/*
 bin/*
+docs/*
+!docs/Doxyfile

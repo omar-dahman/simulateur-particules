@@ -15,12 +15,13 @@ DEBUG = -g
 # Variable to add library if needed, like maths with -lm
 LIBRARIES = # -lm
 
-.PHONY: all clean mrproper build run valgrind
+.PHONY: all clean mrproper build run valgrind docs
 
 all: build run
 
 clean:
 	@rm -rf $(OBJDIR)/*
+	find docs/ -mindepth 1 ! -name 'Doxyfile' -exec rm -rf {} +
 
 mrproper:
 	@rm -rf $(BINDIR)/*
@@ -34,6 +35,9 @@ run: $(BINDIR)/$(EXECUTABLE)
 
 valgrind: $(BINDIR)/$(EXECUTABLE)
 	valgrind --leak-check=full --track-origins=yes ./$(BINDIR)/$(EXECUTABLE)
+
+docs:
+	cd docs && doxygen Doxyfile
 
 $(BINDIR)/$(EXECUTABLE) : $(OBJECTS_NEEDED)
 	@mkdir -p $(BINDIR)
