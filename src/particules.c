@@ -24,14 +24,16 @@ struct particule_s
 };
 
 /**
- * \internal 
- * \brief Normalize the speed vector if it's not unitary.
+ * \internal
+ * \brief Normalizes a speed vector to unit length.
+ *
+ * \param vx Pointer to the x-component of the vector.
+ * \param vy Pointer to the y-component of the vector.
  */
 void normalize(float *vx, float *vy) {
     /*Calculates the vector's norm.*/
     float norm = (float) sqrt((*vx)*(*vx)+(*vy)*(*vy));
-    /*If it's more than 1, the vector needs to be normalized, if it's unitary nothing is to be done.*/
-    /*"1e-f" is used instead of 1 to avoid floating precision errors.*/
+    /*Normalize only if the norm is significantly greater than zero (to avoid division by zero and floating-point precision issues).*/
     if(norm > 1e-6f) {
         *vx/=norm;
         *vy/=norm;
@@ -40,6 +42,9 @@ void normalize(float *vx, float *vy) {
 
 particule create_particule(float x, float y, float vx, float vy) {
     particule p = malloc(sizeof(struct particule_s));
+    if(p==NULL){
+        return NULL;
+    }
     p->x = x;
     p->y = y;
     normalize(&vx,&vy);
@@ -85,6 +90,6 @@ void move(particule p, float dt){
 }
 
 float distanceve(particule p1, particule p2){
-    float distance = (float) sqrt(pow((p2->x) - (p1->x), 2) + pow((p2->y) - (p1->y), 2));
+    float distance = (float) sqrt(((p2->x) - (p1->x))*((p2->x) - (p1->x)) + ((p2->y) - (p1->y))*((p2->y) - (p1->y)));
     return distance;
 }
