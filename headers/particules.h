@@ -3,6 +3,7 @@
 
 /**
  * \file particules.h
+ * \brief Individual particle management
  *
  * This file allows managing each particle individually.
  * 5 functions are defined:
