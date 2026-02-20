@@ -72,6 +72,14 @@ float get_vx(particule p);
 float get_vy(particule p);
 
 /**
+ * \brief Replaces the position of particle \a p with ( \a x, \a y ).
+ * \param p A particle.
+ * \param x x-coordinate of the particle.
+ * \param y y-coordinate of the particle.
+ */
+void set_position(particule p, float x, float y);
+
+/**
  * \brief Replaces the speed of particle \a p with ( \a vx, \a vy ).
  * If the vector is not unitary, it is normalized.
  * \param p A particle.
