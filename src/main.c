@@ -136,9 +136,9 @@ arguments handle_arguments() {
     options->particle_nb = ask_for_int("Entrer le nombre de particules :", 1, NULL);
     options->w = ask_for_int("Entrer la largeur :", 1, NULL);
     options->h = ask_for_int("Entrer la hauteur :", 1, NULL);
-    options->radius = ask_for_float("Entrer le rayon :", 1, NULL);
+    options->radius = ask_for_float("Entrer le rayon :", 1.0, NULL);
     options->iterations = ask_for_int("Entrer le nombre d'iterations :", 0, NULL);
-    options->iteration_t = ask_for_float("Entrer la duree de l'iteration :", 0, NULL);
+    options->iteration_t = ask_for_float("Entrer la duree de l'iteration :", 0.0, NULL);
     options->export_img = ask_for_borned_int("Entrer 0 pour la console, 1 pour exporter en image", 0, NULL, 1);
     
     // Setup these options using dummy values if using console output
