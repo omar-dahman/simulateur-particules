@@ -14,7 +14,7 @@
  * Is is defined here as there is no function to ask for a string and using scanf isn't allowed
  * \warning Filename is handled by animate functions as specified in \ref interface.h
  */
-#define OUTPUT_DIRECTORY "."
+#define OUTPUT_DIRECTORY "output"
 
 /**
  * \internal
@@ -185,5 +185,5 @@ int main(void) {
  * Usage : ./simparticles  
  * Just run it, it will ask all the necessary questions
  * 
- * Go check out \link headers
+ * Go check out \dir headers
  */

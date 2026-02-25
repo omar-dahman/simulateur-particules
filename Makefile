@@ -2,6 +2,7 @@ SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
 HEADERSDIR = headers
+IMAGESDIR = output
 
 OPTIONS = -Wall -Wextra -std=c99 -I$(HEADERSDIR)
 CC = gcc
@@ -31,6 +32,7 @@ build:
 	@make $(BINDIR)/$(EXECUTABLE)
 
 run: $(BINDIR)/$(EXECUTABLE)
+	@mkdir -p $(IMAGESDIR)
 	@./$(BINDIR)/$(EXECUTABLE)
 
 valgrind: $(BINDIR)/$(EXECUTABLE)
