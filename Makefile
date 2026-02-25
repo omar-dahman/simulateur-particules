@@ -13,7 +13,7 @@ OBJECTS_NEEDED = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(wildcard $(SRCDIR)/*
 # Variable to modify to enable or disable debug : leave empty or add -g
 DEBUG = -g
 # Variable to add library if needed, like maths with -lm
-LIBRARIES = # -lm
+LIBRARIES = -lm
 
 .PHONY: all clean mrproper build run valgrind docs
 
@@ -21,7 +21,7 @@ all: build run
 
 clean:
 	@rm -rf $(OBJDIR)/*
-	find docs/ -mindepth 1 ! -name 'Doxyfile' -exec rm -rf {} +
+	@find docs/ -mindepth 1 ! -name 'Doxyfile' -exec rm -rf {} +
 
 mrproper:
 	@rm -rf $(BINDIR)/*
