@@ -123,14 +123,12 @@ float ask_for_float(char* message, float min_value, char* error_msg) {
  * \li Is blocking
  * \li Handles minimum and maximum values for relevant fields
  * \endparblock
- * \warning Exit on malloc failure
  */
 arguments handle_arguments() {
     arguments options = malloc(sizeof(struct arguments_s));
 
     if(options==NULL) {
-        print_message("Malloc failure");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
 
     options->particle_nb = ask_for_int("Entrer le nombre de particules :", 1, NULL);
@@ -159,6 +157,10 @@ int main(void) {
     arguments options = handle_arguments();
 
     env environnement = create_environnement(options->particle_nb, options->w, options->h, options->radius, options->iteration_t);
+    if(environment==NULL) {
+        print_message("Argument parsing failure");
+        return(EXIT_FAILURE);
+    }
 
     if (options->export_img) {
         animate(environnement, OUTPUT_DIRECTORY, options->img_w, options->img_h, options->iterations);
@@ -169,6 +171,7 @@ int main(void) {
         }   
     }
     free(options);
+    free_environnement(environnement)
     print_message("Simulation terminee");
 
     return EXIT_SUCCESS;
