@@ -157,7 +157,7 @@ int main(void) {
     arguments options = handle_arguments();
 
     env environnement = create_environnement(options->particle_nb, options->w, options->h, options->radius, options->iteration_t);
-    if(environment==NULL) {
+    if(environnement==NULL) {
         print_message("Argument parsing failure");
         return(EXIT_FAILURE);
     }
@@ -171,7 +171,7 @@ int main(void) {
         }   
     }
     free(options);
-    free_environnement(environnement)
+    free_environnement(environnement);
     print_message("Simulation terminee");
 
     return EXIT_SUCCESS;
