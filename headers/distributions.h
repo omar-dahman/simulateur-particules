@@ -47,9 +47,9 @@ float exponential(float k);
 /**
  * \brief Picks a random value from a discrete set of options
  * 
- * \details You give it an array of possible values and their probabilities,
- * and it randomly picks one according to those probablities.
- * \attention Make sure your probabilities add up to 1
+ * \details This function looks at a list of values and their chances. It then picks one value for you at random.
+ * 
+ * \attention The sum of all probabilities should add up to 1.
  * 
  * \param n How many elements are in the arrays (must be >= 1)
  * \param t Array of possible values to choose from
