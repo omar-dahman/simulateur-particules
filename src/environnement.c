@@ -13,8 +13,6 @@
 #include "environnement.h"
 #include "distributions.h"
 
-#define M_PI 3.14159265358979323846
-
 /**
  * \struct env_structure
  * \brief environment structure
@@ -35,7 +33,7 @@ env create_environnement(int n, float w, float h, float r, float dt) {
 
     e = malloc(sizeof(struct env_structure));
     if (!e) {
-        exit(EXIT_FAILURE);
+        return NULL;
     }
     
     e -> w = w;
@@ -47,7 +45,7 @@ env create_environnement(int n, float w, float h, float r, float dt) {
     e -> particules = malloc(n * sizeof(particule));
     if (!e -> particules) {
         free(e);
-        exit(EXIT_FAILURE);
+        return NULL;
     }
     
     for (int i = 0; i < n; i++) {
@@ -74,7 +72,7 @@ int get_n(env e) {
 
 particule get_particule(env e, int i) {
     if (i < 0 || i >= e -> n) {
-        exit(EXIT_FAILURE);
+        return NULL;
     }
     
     return e -> particules[i];
@@ -111,23 +109,32 @@ float get_r(env e) {
  * \return  nothing
  */
 void border_collision_handler(particule p, float env_w, float env_h, float new_p_x, float new_p_y) {
+    float p_vx = get_vx(p);
+    float p_vy = get_vy(p);
+    float final_p_x = new_p_x;
+    float final_p_y = new_p_y;
+    
     if (new_p_x >= env_w) { // right border
-        set_position(p, 2 * env_w - new_p_x, new_p_y);
-        set_speed(p, -get_vx(p), get_vy(p));
+        final_p_x = 2 * env_w - new_p_x;
+        p_vx = -p_vx;
     }
     else if (new_p_x <= 0) { // left border
-        set_position(p, -new_p_x, new_p_y);
-        set_speed(p, -get_vx(p), get_vy(p));
+        final_p_x = -new_p_x;
+        p_vx = -p_vx;
     }
-    else if (new_p_y >= env_h) { // top border
-        set_position(p, new_p_x, 2 * env_h - new_p_y);
-        set_speed(p, get_vx(p), -get_vy(p));
+    
+    if (new_p_y >= env_h) { // top border
+        final_p_y = 2 * env_h - new_p_y;
+        p_vy = -p_vy;
     }
     else if (new_p_y <= 0) { // bottom border
-        set_position(p, new_p_x, -new_p_y);
-        set_speed(p, get_vx(p), -get_vy(p));
+        final_p_y = -new_p_y;
+        p_vy = -p_vy;
     }
-}
+    
+    set_position(p, final_p_x, final_p_y);
+    set_speed(p, p_vx, p_vy);
+}    
 
 /**
  * \brief   find neighbor particles and barycenter
@@ -143,7 +150,7 @@ void border_collision_handler(particule p, float env_w, float env_h, float new_p
  * \return  the number of neighbors as \a int
  */
 int find_neighbors_and_barycenter(env e, particule p, int i, float env_r, int env_n, float* barycenter_x, float* barycenter_y) {
-    int neighbor_count = 0;
+    int number_of_neighbors = 0;
     *barycenter_x = 0;
     *barycenter_y = 0;
     
@@ -158,11 +165,11 @@ int find_neighbors_and_barycenter(env e, particule p, int i, float env_r, int en
         if (distance <= env_r) {
             *barycenter_x += get_x(p2);
             *barycenter_y += get_y(p2);
-            neighbor_count++;
+            number_of_neighbors++;
         }
     }
     
-    return neighbor_count;
+    return number_of_neighbors;
 }
 
 /**
@@ -202,9 +209,6 @@ void move_particules(env e) {
 
     for (int i = 0; i < env_n; i++) {
         p = get_particule(e, i);
-        
-        float old_p_x = get_x(p);
-        float old_p_y = get_y(p);
         
         move(p, env_dt);
 
