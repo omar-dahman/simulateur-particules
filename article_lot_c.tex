@@ -1,0 +1,373 @@
+\documentclass[12pt,a4paper]{report}
+
+% ======================================================================================
+% imports des bibliotheques
+% ======================================================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{times}
+\usepackage{xcolor}
+\usepackage[none]{hyphenat}   
+
+% ======================================================================================
+% Configurations Generaux
+% ======================================================================================
+
+\geometry{margin=2.5cm}
+
+% Configuration des blocs pour le code C
+\lstset{
+    language=C,                    % Langage utilisé
+    basicstyle=\ttfamily\small,    % Police monospace de taille réduite
+    keywordstyle=\color{blue}\bfseries,  % Mots-clés en bleu gras
+    commentstyle=\color{green!60!black}\itshape,  % Commentaires en vert italique
+    stringstyle=\color{red},        % Chaînes de caractères en rouge
+    numbers=left,                   % Numéros de lignes à gauche
+    numberstyle=\tiny\color{gray},  % Style des numéros de ligne
+    frame=single,                   % Encadrement simple
+    breaklines=true,                % Retour à la ligne automatique
+    showstringspaces=false,         % Ne pas montrer les espaces dans les chaînes
+    tabsize=4,                      % Taille des tabulations
+    captionpos=b                    % Position des légendes en bas
+}
+
+% ======================================================================================
+% Debut du Document
+% ======================================================================================
+
+\begin{document}
+\sloppy
+
+% ======================================================================================
+% Premiere page
+% ======================================================================================
+\begin{titlepage}
+    \centering
+    
+    % Logo de l'école
+    \includegraphics[width=0.5\textwidth]{icons/logo_ensiie.jpeg}
+    
+    \vspace{0.5cm}
+    
+    % Nom complet de l'école
+    {\large L'École Nationale Supérieure d'Informatique pour l'Industrie et l'Entreprise}
+    
+    \vspace{2cm}
+    
+    % Ligne horizontale supérieure
+    \noindent\makebox[\linewidth]{\rule{\textwidth}{0.4pt}}
+    
+    \vspace{1cm}
+    
+    % Titre principal du projet
+    {\LARGE \textbf{Simulateur De Particules Dans Un Environnement}}
+    
+    \vspace{1cm}
+    
+    % Ligne horizontale inférieure
+    \noindent\makebox[\linewidth]{\rule{\textwidth}{0.4pt}}
+    
+    \vspace{2cm}
+    
+    % Informations du projet alignées à gauche
+    \begin{flushleft}
+        \textbf{Module :} Programmation impérative - PRIM12 \\
+        \textbf{Semesttre :} S2 \\
+        \textbf{Filière :} FISE + FISA \\
+        \textbf{Groupe :} 22 \\[01cm]
+        \textbf{Réalisé par :} 
+        \begin{itemize}
+          \item Othmane CHAOUI
+          \item Omar DAHMAN
+          \item Rayen JALOUALI
+        \end{itemize}
+        \vspace{1cm}
+        \textbf{Encadrant :} M. Dimitri WATEL \\
+    \end{flushleft}
+    
+    \vfill
+    
+    % Date de remise
+    \large \textbf{7 Juin 2026}
+    
+\end{titlepage}
+
+% Table des matières
+\tableofcontents
+\newpage
+
+% ======================================================================================
+\chapter{Introduction}
+% ======================================================================================
+
+\section{Objectifs du projet}
+
+Ce projet vise à représenter des particules dans un environnement, tout en gérant les réactions et les interactions des particules entre elles-mêmes et avec les bords de notre environnement, ce qui ramène à des calculs des positions et des vitesses des particules à travers des notions mathématiques pour enfin automatiser les mouvements des particules et les simuler sous forme d’images (.pbm) ou de représentations dans la console.
+
+\section{Context}
+
+Cette partie du projet vise à modéliser rigoureusement le comportement des particules, à comprendre les limites de la simulation numérique et à étudier les propriétés statistiques du système, c'est une étude déterministe des trajectoires, des rebonds et des interactions simples. Il s'agit du socle nécessaire afin d'effectuer des simulations correctes.
+
+\section{Outils \& technologies}
+
+\begin{itemize}
+    \item Language de programmation C
+    \item \textbf{IDE : } VScode
+    \item GanttProject
+    \item Valgrind
+    \item CUnit
+    \item Doxygen
+    \item Git
+\end{itemize}
+
+% ======================================================================================
+\chapter{LOT C}
+% ======================================================================================
+
+\section{Tâche C.1}
+
+\subsection{Question 1}
+
+\begin{verbatim}
+git branch lot_b
+git checkout -b lot_c
+git push -u origin lot_c
+\end{verbatim}
+
+\subsection{Question 2}
+
+Supposons les deux vecteurs suivants : \\ [0.2cm]
+$v = \begin{pmatrix} v_x \\ v_y \end{pmatrix}$ : le vecteur vitesse de la particule \textbf{avant} la collision \\ [0.2cm]
+$v' = \begin{pmatrix} v_x' \\ v_y' \end{pmatrix}$ : le vecteur vitesse de la particule \textbf{après} la collision \\
+
+La particule frappe un mur vertical à la position $x = w$ avec un vecteur vitesse $v$ et rebondit avec un vecteur vitesse $v'$, on obtient donc une réflexion miroir comme illustré ci-dessous :\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/rebond_mur_vertical.png}
+    \caption{Rebond sur un mur vertical}
+    \label{fig:2.1}
+\end{figure}
+
+Le nouveau vecteur vitesse $v'$ sera tout simplement la symétrie de $v$ par rapport à l'axe horizontal d'équation $y = y_s$ et dans le sens opposé, donc la composante normale du vecteur (suivant l'axe $x$) change de signe, par contre la composante tangentielle (suivant l'axe $y$) reste inchangée, alors on obtient le résultat suivant :\\
+\begin{equation}
+\boxed{v' = (-v_x, v_y)}
+\end{equation}
+
+\subsection{Question 3}
+La particule frappe un mur incliné (de vecteur unitaire normale $\vec{n}$) avec une vitesse $v$ et rebond avec une vitesse $v'$, on obtient alors une réflexion miroir par rapport à ce mur comme montré ci-dessous :
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/rebond_mur_incline.png}
+    \caption{Rebond sur un mur incliné}
+    \label{fig:2.2}
+\end{figure} \\
+
+Après rebond, $v'$ sera la symétrie de $v$ par rapport au support de $n$, avec $v'$ dans le sens opposé de $v$. Cherchons l'expression de $v'$ en fonction de $v$ et du produit scalaire entre $v$ et $n$, tel que :
+$$||\vec{n}|| = 1$$
+Or, la vitesse $v$ peut s'écrire comme une somme entre sa composante tangentielle et sa composante normale comme suit :
+$$v = v_n + v_t$$
+De plus, le produit scalaire d'un vecteur $\vec{v}$ et $\vec{n}$ donne la projection de $\vec{v}$ sur la direction de $\vec{n}$, donc c'est exactement la composante normale de la vitesse $\vec{v}$. Donc on trouve les deux composantes de la vitesse :
+$$
+v = \left\{
+\begin{aligned}
+v_n &= <v,n>n \\
+v_t &= v - v_n
+\end{aligned}
+\right.
+$$
+
+De même pour la vitesse $v'$, on trouve :
+$$
+v' = \left\{
+\begin{aligned}
+v_n' &= <v',n>n \\
+v_t' &= v' - v_n'
+\end{aligned}
+$$
+\right
+
+Après réflexion :
+\begin{itemize}
+    \item La composante tangentielle est conservée : $v'_t = v_t$
+    \item La composante normale change de signe : $v'_n = -v_n$
+\end{itemize}
+
+Or :
+$$
+v' = v_t' + v'_n = v_t - v_n = (v - <v, n>n) + -<v, n>n = v - 2<v, n>n \\
+$$
+
+D'où : \\
+\begin{equation}
+    \boxed{v' = v - 2<v, n>n}
+\end{equation}
+
+\subsection{Question 4}
+
+La particule frappe exactement le coin de l'environnement, par exemple aux coordonnées $(W, H)$. Cherchons le vecteur normal $n$ virtuel qui provoque un demi-tour parfait donnant :
+$$v' = -v$$
+soit l'illustration suivante :
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/rebond_coin.png}
+    \caption{Rebond sur un coin de l'environnement}
+    \label{fig:2.3}
+\end{figure}\\
+
+En utilisant la formule de la question précédente (Question 3), on trouve :
+\begin{align}
+v' &= v - 2<v, n>n\\
+-v - v &= -2<v, n>n\\
+-2v &= -2<v, n>n\\
+v &= <v, n>n
+\end{align}
+Alors $v$ et $n$ sont coliniéres et parallèles, alors :
+$$v = \pm ||v||n$$
+$$n = \pm \frac{v}{||v||}$$
+
+Pour que $\langle v, n \rangle$ soit positif (car c'est le facteur devant $n$), on prend :\begin{equation}
+    \boxed{n = \frac{v}{||v||}}
+\end{equation}
+
+Soit l'exemple de verification :
+\begin{align}
+\langle\mathbf{v}, \mathbf{n}\rangle &= \|\mathbf{v}\|\\
+\mathbf{v}' &= \mathbf{v} - 2\|\mathbf{v}\|\left(\frac{\mathbf{v}}{\|\mathbf{v}\|}\right) = \mathbf{v} - 2\mathbf{v} = -\mathbf{v} \quad \checkmark
+\end{align}
+
+\section{Tâche C.3}
+
+{1. Espérance de la position}
+
+Par linéarité de l'espérance, nous avons :
+$$
+\mathbb{E}[p_n] = \mathbb{E}\left[ \sum_{k=1}^{n} e^{i \xi_k} \right] = \sum_{k=1}^{n} \mathbb{E}\left[ e^{i \xi_k} \right]
+$$
+Calculons l'espérance d'un terme individuel $e^{i \xi_k}$. Puisque $\xi_k \sim \mathcal{U}([0, 2\pi])$, la densité de probabilité est $\frac{1}{2\pi}$.
+$$
+\mathbb{E}[e^{i \xi_k}] = \int_{0}^{2\pi} e^{i x} \cdot \frac{1}{2\pi} \, dx
+$$
+$$
+\mathbb{E}[e^{i \xi_k}] = \frac{1}{2\pi} \left[ \frac{e^{i x}}{i} \right]_{0}^{2\pi} = \frac{1}{2\pi i} (e^{i 2\pi} - e^{0})
+$$
+Or, $e^{i 2\pi} = 1$ et $e^{0} = 1$, donc :
+$$
+\mathbb{E}[e^{i \xi_k}] = \frac{1}{2\pi i} (1 - 1) = 0
+$$
+Par conséquent :
+$$
+\mathbb{E}[p_n] = \sum_{k=1}^{n} 0 = 0
+$$
+L'espérance de la position est bien l'origine $(0,0)$ dans le plan complexe.
+
+\paragraph{Interprétation :} La particule ne reste pas pour autant à l'origine. L'espérance nulle signifie simplement que la particule n'a pas de direction privilégiée (isotropie). À chaque instant, elle se déplace, mais en moyenne sur un très grand nombre d'expériences, le barycentre des positions se trouve à l'origine. Comme nous le verrons dans la question suivante, la distance moyenne à l'origine augmente avec le temps.
+
+\subsection*{2. Variance de la position}
+
+
+On cherche à calculer $\mathbb{E}[|p_n|^2]$. Rappelons que pour un nombre complexe $z$, $|z|^2 = z \bar{z}$.
+$$
+|p_n|^2 = p_n \overline{p_n} = \left( \sum_{k=1}^{n} e^{i \xi_k} \right) \overline{\left( \sum_{j=1}^{n} e^{i \xi_j} \right)}
+$$
+$$
+|p_n|^2 = \left( \sum_{k=1}^{n} e^{i \xi_k} \right) \left( \sum_{j=1}^{n} e^{-i \xi_j} \right) = \sum_{k=1}^{n} \sum_{j=1}^{n} e^{i(\xi_k - \xi_j)}
+$$
+Passons à l'espérance. Par linéarité :
+$$
+\mathbb{E}[|p_n|^2] = \sum_{k=1}^{n} \sum_{j=1}^{n} \mathbb{E}\left[ e^{i(\xi_k - \xi_j)} \right]
+$$
+Nous distinguons deux cas pour les indices $k$ et $j$ :
+
+\begin{itemize}
+    \item \textbf{Cas 1 : $k = j$} \\
+    Alors $e^{i(\xi_k - \xi_k)} = e^0 = 1$. L'espérance vaut 1.
+    Il y a $n$ termes de ce type (la diagonale de la double somme).
+
+    \item \textbf{Cas 2 : $k \neq j$} \\
+    Les variables $\xi_k$ et $\xi_j$ sont indépendantes. Donc :
+    $$
+    \mathbb{E}[e^{i \xi_k} e^{-i \xi_j}] = \mathbb{E}[e^{i \xi_k}] \cdot \mathbb{E}[e^{-i \xi_j}]
+    $$
+    D'après le calcul effectué en question 1, $\mathbb{E}[e^{i \xi}] = 0$. Donc tous les termes croisés sont nuls.
+\end{itemize}
+
+Ainsi, il ne reste que la somme des termes diagonaux :
+$$
+\mathbb{E}[|p_n|^2] = \sum_{k=1}^{n} 1 = n
+$$
+
+\subsection*{3. Croissance linéaire}
+
+
+
+D'après le résultat obtenu à la question 2, nous avons établi que :
+$$
+\mathbb{E}[|p_n|^2] = n
+$$
+Cette relation est de la forme $f(n) = a \cdot n$ avec $a=1$.
+Cela démontre que la distance quadratique moyenne à l'origine est \textbf{directement proportionnelle} au nombre de pas de temps $n$. C'est une propriété caractéristique des phénomènes de diffusion (comme le mouvement brownien) : la particule s'éloigne de l'origine non pas à une vitesse constante, mais de manière diffusive, où l'écart-type de la distance croît comme $\sqrt{n}$.
+
+
+
+
+\section{Tâche C.4}
+
+
+Pour tout indice $j$, les variables $\xi^1_j$ et $\xi^2_j$ suivent une loi uniforme sur $[0, 2\pi]$. 
+L'espérance du terme $e^{i\xi^1_j}$ est donc nulle :
+$$E[e^{i\xi^1_j}] = \frac{1}{2\pi} \int_{0}^{2\pi} e^{ix} \, dx = 0$$
+De même, $E[e^{i\xi^2_j}] = 0$. Le module de ces exponentielles complexes vaut toujours $1$, donc $|e^{i\xi^1_j}|^2 = 1$ et $|e^{i\xi^2_j}|^2 = 1$.
+
+\subsection*{1. Calcul de $E[D_1]$ et $E[|D_1|^2]$}
+D'après l'énoncé pour $n=1$, nous avons :
+$$P^1_1 = e^{i\xi^1_1} \quad \text{et} \quad P^2_1 = e^{i\xi^2_1}$$
+Donc $D_1 = P^1_1 - P^2_1 = e^{i\xi^1_1} - e^{i\xi^2_1}$.
+
+Par linéarité de l'espérance :
+$$E[D_1] = E[e^{i\xi^1_1}] - E[e^{i\xi^2_1}] = 0 - 0 = \fcolorbox{red}{white}{$0$}$$
+
+Par définition $|D_1|^2 = D_1 \overline{D_1}$, donc :
+$$|D_1|^2 = (e^{i\xi^1_1} - e^{i\xi^2_1})(\overline{e^{i\xi^1_1}} - \overline{e^{i\xi^2_1}})$$
+$$|D_1|^2 = |e^{i\xi^1_1}|^2 + |e^{i\xi^2_1}|^2 - e^{i\xi^1_1}\overline{e^{i\xi^2_1}} - \overline{e^{i\xi^1_1}}e^{i\xi^2_1}$$
+$$|D_1|^2 = 1 + 1 - e^{i\xi^1_1}e^{-i\xi^2_1} - e^{-i\xi^1_1}e^{i\xi^2_1}$$
+
+Les variables $\xi^1_1$ et $\xi^2_1$ étant indépendantes (d'après l'énoncé), l'espérance de leur produit est le produit de leurs espérances :
+$$E[e^{i\xi^1_1}e^{-i\xi^2_1}] = E[e^{i\xi^1_1}] E[e^{-i\xi^2_1}] = 0 \times 0 = 0}$$
+$$E[e^{-i\xi^1_1}e^{i\xi^2_1}] = E[e^{-i\xi^1_1}] E[e^{i\xi^2_1}] = 0 \times 0 = 0}$$
+
+On en déduit que :
+$$E[|D_1|^2] = 2 - 0 - 0 = \fcolorbox{red}{white}{$2$}$$
+
+\subsection*{2. Calcul de $E[D_k]$ et $E[|D_k|^2]$ pour tout $k$}
+La variable $D_k$ représente la différence des positions à l'étape $k$ :
+$$D_k = P^1_k - P^2_k = \sum_{j=1}^k e^{i\xi^1_j} - \sum_{j=1}^k e^{i\xi^2_j} = \sum_{j=1}^k (e^{i\xi^1_j} - e^{i\xi^2_j})$$
+
+Par linéarité de l'espérance :
+$$E[D_k] = \sum_{j=1}^k \left( E[e^{i\xi^1_j} - e^{i\xi^2_j}] \right) = \sum_{j=1}^k \left( E[e^{i\xi^1_j}] - E[e^{i\xi^2_j}] \right) = \sum_{j=1}^k (0 - 0) = \fcolorbox{red}{white}{$0$}$$
+
+
+Pour $E[|D_k|^2]$, posons $Y_j = e^{i\xi^1_j} - e^{i\xi^2_j}$. D'après la question 1, on sait que $E[Y_j] = 0$ et $E[|Y_j|^2] = 2$. Donc, par linéarite de l'espérance : 
+\[
+E[|D_k|^2]
+= E\left[\left(\sum_{j=1}^k Y_j\right)\overline{\left(\sum_{l=1}^k Y_l\right)}\right]
+= E\left[\left(\sum_{j=1}^k Y_j\right)\left(\sum_{l=1}^k \overline{Y_l}\right)\right]
+= \sum_{j=1}^k \sum_{l=1}^k E[Y_j \overline{Y_l}]
+\]
+
+Puisque les variables $(Y_j)_{j \ge 1}$ sont indépendantes (car les variables $\xi^1_j$ et $\xi^2_j$ le sont), pour tout $j \neq l$, on a :
+$$E[Y_j \overline{Y_l}] = E[Y_j]E[\overline{Y_l}] = 0 \times 0 = 0$$
+
+Par suite :
+$$E[|D_k|^2] = \sum_{j=1}^k E[Y_j \overline{Y_j}] = \sum_{j=1}^k E[|Y_j|^2] = \sum_{j=1}^k 2 = \fcolorbox{red}{white}{$2k$}$$
+
+\end{document}
