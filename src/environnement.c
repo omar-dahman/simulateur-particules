@@ -1,55 +1,68 @@
 /**
  * \file    environnement.c
- * \author  Othmane CHAOUI
- * \date    2026-02-25
+ * \author  Omar DAHMAN
+ * \date    2026-04-04
  *
  * \brief   Particles management and handling (Implementation)
- * \details This file contains implementtation of functions declared
- *          in \b envionnement.h
+ * \details This file contains implementation of functions declared in environnement.h.
+ *
+ * \note MODIFIED FOR LOT E (Tâche E.2):
+ *   - struct env_structure: added field \a d (depth, z-axis).
+ *   - create_environnement: added parameter \a d; particles now initialised with z = d/2 and vz = 0.
+ *   - get_d: new getter for depth.
+ *   - border_collision_handler: extended to handle z-axis borders.
+ *   - find_neighbors_and_barycenter: uses 3D distance and accumulates z.
+ *   - particles_collision_handler: repulsion direction now computed in 3D using vec3.
+ *   - move_particules: passes depth to border handler.
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "environnement.h"
 #include "distributions.h"
+#include "vector.h" /* ADDED FOR LOT E (Tâche E.2) */
 
 /**
  * \struct env_structure
- * \brief environment structure
- * \details This structure represents the implementation
- *          of a type for environment
+ * \brief Environment structure
+ * \note MODIFIED FOR LOT E (Tâche E.2): added field \a d for depth.
  */
 struct env_structure {
-    float w;                    /**< width of the environment */
-    float h;                    /**< height of the environment */
-    int n;                      /**< number of particles in the environment */
-    float r;                    /**< radius of interactions in the environment */
-    float dt;                   /**< movement duration in the environment */
-    particule* particules;      /**< table of particles in the environment */
+    float w;               /**< width  of the environment (x-axis) */
+    float h;               /**< height of the environment (y-axis) */
+    float d;               /**< depth  of the environment (z-axis) [ADDED FOR LOT E - Tâche E.2] */
+    int   n;               /**< number of particles */
+    float r;               /**< interaction radius */
+    float dt;              /**< iteration duration */
+    particule *particules; /**< array of particles */
 };
 
-env create_environnement(int n, float w, float h, float r, float dt) {
-    env e;
 
-    e = malloc(sizeof(struct env_structure));
+env create_environnement(int n, float w, float h, float d, float r, float dt) {
+    /* MODIFIED FOR LOT E (Tâche E.2): added parameter d */
+    env e = malloc(sizeof(struct env_structure));
     if (!e) {
         return NULL;
     }
-    
-    e -> w = w;
-    e -> h = h;
-    e -> n = n;
-    e -> r = r;
-    e -> dt = dt;
-    
-    e -> particules = malloc(n * sizeof(particule));
-    if (!e -> particules) {
+
+    e->w  = w;
+    e->h  = h;
+    e->d  = d;   /* ADDED FOR LOT E (Tâche E.2) */
+    e->n  = n;
+    e->r  = r;
+    e->dt = dt;
+
+    e->particules = malloc(n * sizeof(particule));
+    if (!e->particules) {
         free(e);
         return NULL;
     }
-    
+
+    /* Place all particles at the centre of the 3D environment,
+     * moving in the positive x direction.
+     * MODIFIED FOR LOT E (Tâche E.2): centre now also includes d/2 for z. */
     for (int i = 0; i < n; i++) {
-        e -> particules[i] = create_particule(w / 2, h / 2, 1.0, 0.0);
+        e->particules[i] = create_particule(w / 2.0f, h / 2.0f, d / 2.0f,
+                                             1.0f, 0.0f, 0.0f);
     }
 
     return e;
@@ -57,180 +70,176 @@ env create_environnement(int n, float w, float h, float r, float dt) {
 
 void free_environnement(env e) {
     int env_n = get_n(e);
-    
     for (int i = 0; i < env_n; i++) {
-        free_particule(e -> particules[i]);
+        free_particule(e->particules[i]);
     }
-    
     free(e->particules);
     free(e);
 }
 
 int get_n(env e) {
-    return e -> n;
+    return e->n;
 }
 
 particule get_particule(env e, int i) {
-    if (i < 0 || i >= e -> n) {
+    if (i < 0 || i >= e->n) {
         return NULL;
     }
-    
-    return e -> particules[i];
+    return e->particules[i];
 }
 
-float get_w(env e) {
-    return e -> w;
-}
+float get_w(env e) { return e->w; }
+float get_h(env e) { return e->h; }
+float get_dt(env e) { return e->dt; }
+float get_r(env e) { return e->r; }
 
-float get_h(env e) {
-    return e -> h;
-}
+/* ADDED FOR LOT E (Tâche E.2) */
+float get_d(env e) { return e->d; }
 
-float get_dt(env e) {
-    return e -> dt;
-}
 
-float get_r(env e) {
-    return e -> r;
+/**
+ * \brief   Border collision handler (3D)
+ * \details Handles collisions of a particle with the 6 faces of the
+ *          rectangular parallelepiped environment and updates position/speed.
+ *
+ * \param   p       particle as \a particule
+ * \param   env_w   width  of the environment as \a float
+ * \param   env_h   height of the environment as \a float
+ * \param   env_d   depth  of the environment as \a float
+ * \param   new_x   new x-coordinate after move
+ * \param   new_y   new y-coordinate after move
+ * \param   new_z   new z-coordinate after move [ADDED FOR LOT E - Tâche E.2]
+ *
+ * \note MODIFIED FOR LOT E (Tâche E.2): added z-axis handling.
+ */
+static void border_collision_handler(particule p,
+                                     float env_w, float env_h, float env_d,
+                                     float new_x, float new_y, float new_z) {
+    float vx = get_vx(p);
+    float vy = get_vy(p);
+    float vz = get_vz(p);   /* ADDED FOR LOT E (Tâche E.2) */
+
+    float fx = new_x;
+    float fy = new_y;
+    float fz = new_z;       /* ADDED FOR LOT E (Tâche E.2) */
+
+    /* X-axis borders */
+    if (new_x >= env_w) {
+        fx = 2.0f * env_w - new_x;
+        vx = -vx;
+    } else if (new_x <= 0.0f) {
+        fx = -new_x;
+        vx = -vx;
+    }
+
+    /* Y-axis borders */
+    if (new_y >= env_h) {
+        fy = 2.0f * env_h - new_y;
+        vy = -vy;
+    } else if (new_y <= 0.0f) {
+        fy = -new_y;
+        vy = -vy;
+    }
+
+    /* Z-axis borders — ADDED FOR LOT E (Tâche E.2) */
+    if (new_z >= env_d) {
+        fz = 2.0f * env_d - new_z;
+        vz = -vz;
+    } else if (new_z <= 0.0f) {
+        fz = -new_z;
+        vz = -vz;
+    }
+
+    set_position(p, fx, fy, fz);
+    set_speed(p, vx, vy, vz);
 }
 
 /**
- * \brief   border collision handler
- * \details This function handles the collisions of particles with the borders of the environment,
- *          and updates their positions accordinally
+ * \brief   Find neighbor particles and compute their barycenter
+ * \details Iterates over all particles and accumulates the positions of those
+ *          within radius \a env_r of particle \a p (particle \a i is excluded).
  *
- * \param   p           particle as \a particule
- * \param   env_w       width of the environment as \a float
- * \param   env_h       height of the environment as \a float
- * \param   old_p_x     old \b p's X-coordinates as \a float
- * \param   old_p_y     old \b p's Y-coordinates as \a float
- * \param   new_p_x     new \b p's X-coordinates as \a float
- * \param   new_p_y     new \b p's Y-coordinates as \a float
- * \return  nothing
+ * \param   e               environment
+ * \param   p               reference particle
+ * \param   i               index of reference particle (excluded from search)
+ * \param   env_r           interaction radius
+ * \param   env_n           total number of particles
+ * \param   barycenter      output: sum of neighbor positions (divided later) [MODIFIED FOR LOT E - Tâche E.2: now vec3*]
+ * \return  number of neighbors found
+ *
+ * \note MODIFIED FOR LOT E (Tâche E.2): barycenter is now a vec3 to handle 3D positions.
  */
-void border_collision_handler(particule p, float env_w, float env_h, float new_p_x, float new_p_y) {
-    float p_vx = get_vx(p);
-    float p_vy = get_vy(p);
-    float final_p_x = new_p_x;
-    float final_p_y = new_p_y;
-    
-    if (new_p_x >= env_w) { // right border
-        final_p_x = 2 * env_w - new_p_x;
-        p_vx = -p_vx;
-    }
-    else if (new_p_x <= 0) { // left border
-        final_p_x = -new_p_x;
-        p_vx = -p_vx;
-    }
-    
-    if (new_p_y >= env_h) { // top border
-        final_p_y = 2 * env_h - new_p_y;
-        p_vy = -p_vy;
-    }
-    else if (new_p_y <= 0) { // bottom border
-        final_p_y = -new_p_y;
-        p_vy = -p_vy;
-    }
-    
-    set_position(p, final_p_x, final_p_y);
-    set_speed(p, p_vx, p_vy);
-}    
+static int find_neighbors_and_barycenter(env e, particule p, int i, float env_r, int env_n, vec3 *barycenter) {
+    int count = 0;
+    *barycenter = vec3_make(0.0f, 0.0f, 0.0f);
 
-/**
- * \brief   find neighbor particles and barycenter
- * \details This function finds the neighbor particles to \b p and the barycenter coordinates
- *
- * \param   e               environment as \a env
- * \param   p               particle as \a particule
- * \param   i               the number of the current particle \a int
- * \param   env_r           radius of the environment as \a float
- * \param   env_n           number of particles in the environment as \a int
- * \param   barycenter_x    pointer to barycenter X-coordiantes as \a float*
- * \param   barycenter_y    pointer to barycenter Y-coordiantes as \a float*
- * \return  the number of neighbors as \a int
- */
-int find_neighbors_and_barycenter(env e, particule p, int i, float env_r, int env_n, float* barycenter_x, float* barycenter_y) {
-    int number_of_neighbors = 0;
-    *barycenter_x = 0;
-    *barycenter_y = 0;
-    
     for (int j = 0; j < env_n; j++) {
-        if (i == j) {
-            continue;
-        }
-        
+        if (i == j) continue;
+
         particule p2 = get_particule(e, j);
-        float distance = distanceve(p, p2);
-        
-        if (distance <= env_r) {
-            *barycenter_x += get_x(p2);
-            *barycenter_y += get_y(p2);
-            number_of_neighbors++;
+        if (distanceve(p, p2) <= env_r) {
+            *barycenter = vec3_add(*barycenter, get_pos(p2));
+            count++;
         }
     }
-    
-    return number_of_neighbors;
+    return count;
 }
 
 /**
- * \brief   particles collision handler
- * \details This function handles the collisions between particles and calculates the barycenter coordinates
+ * \brief   Particle repulsion handler
+ * \details Computes the barycenter of neighbors and updates the particle's
+ *          speed to move away from it. If the barycenter coincides with the
+ *          particle's position, a random direction is chosen.
  *
- * \param   p                       particle as \a particule
- * \param   number_of_neighbors     number of neighbor particles as \a int
- * \param   barycenter_x            pointer to barycenter X-coordiantes as \a float*
- * \param   barycenter_y            pointer to barycenter Y-coordiantes as \a float*
- * \return  nothing
+ * \param   p           particle
+ * \param   nb          number of neighbors
+ * \param   barycenter  sum of neighbor positions (not yet averaged)
+ *
+ * \note MODIFIED FOR LOT E (Tâche E.2): repulsion direction computed in 3D with vec3.
  */
-void particles_collision_handler(particule p, int number_of_neighbors, float *barycenter_x, float *barycenter_y) {
-    *barycenter_x = *barycenter_x / number_of_neighbors;
-    *barycenter_y = *barycenter_y / number_of_neighbors;
+static void particles_collision_handler(particule p, int nb, vec3 barycenter) {
+    /* Average to get the actual barycenter */
+    barycenter = vec3_scale(barycenter, 1.0f / (float)nb);
 
-    float p_x = get_x(p);
-    float p_y = get_y(p);
+    vec3 pos = get_pos(p);
+    vec3 away = vec3_sub(pos, barycenter);
 
-    // if barycenter is on the particles
-    if ((*barycenter_x - p_x) < 1e-6f && (*barycenter_y - p_y) < 1e-6f) {
-        set_speed(p, uniform(0, 1), uniform(0, 1));
-    }
-    else {
-        set_speed(p, p_x - *barycenter_x, p_y - *barycenter_y);
+    if (vec3_norm(away) < 1e-6f) {
+        /* Barycenter is on the particle: choose a random direction */
+        float rx = uniform(-1.0f, 1.0f);
+        float ry = uniform(-1.0f, 1.0f);
+        float rz = uniform(-1.0f, 1.0f);
+        set_speed(p, rx, ry, rz);
+    } else {
+        /* set_speed normalizes automatically */
+        set_speed(p, away.x, away.y, away.z);
     }
 }
+
 
 void move_particules(env e) {
-    particule p;
-    
-    int env_n = get_n(e);
+    int   env_n  = get_n(e);
     float env_dt = get_dt(e);
-    float env_w = get_w(e);
-    float env_h = get_h(e);
-    float env_r = get_r(e);
+    float env_w  = get_w(e);
+    float env_h  = get_h(e);
+    float env_d  = get_d(e);   /* ADDED FOR LOT E (Tâche E.2) */
+    float env_r  = get_r(e);
 
+    /* move every particle and handle border collisions */
     for (int i = 0; i < env_n; i++) {
-        p = get_particule(e, i);
-        
+        particule p = get_particule(e, i);
         move(p, env_dt);
-
-        float new_p_x = get_x(p);
-        float new_p_y = get_y(p);
-
-        // borders collision and surpassing handling
-        border_collision_handler(p, env_w, env_h, new_p_x, new_p_y);
+        border_collision_handler(p, env_w, env_h, env_d, get_x(p), get_y(p), get_z(p));
+        /* MODIFIED FOR LOT E (Tâche E.2): now passes get_z and env_d */
     }
 
-    // find neighbor particles
+    /* repulsion between nearby particles */
     for (int i = 0; i < env_n; i++) {
-        p = get_particule(e, i);
-
-        float barycenter_x = 0;
-        float barycenter_y = 0;
-        
-        int number_of_neighbors = find_neighbors_and_barycenter(e, p, i, env_r, env_n, &barycenter_x, &barycenter_y);
-
-        // calculate the barycenter's position and handle collision with other particles
-        if (number_of_neighbors > 0) {
-            particles_collision_handler(p, number_of_neighbors, &barycenter_x, &barycenter_y);
+        particule p = get_particule(e, i);
+        vec3 barycenter;
+        int nb = find_neighbors_and_barycenter(e, p, i, env_r, env_n, &barycenter);
+        if (nb > 0) {
+            particles_collision_handler(p, nb, barycenter);
         }
     }
 }
