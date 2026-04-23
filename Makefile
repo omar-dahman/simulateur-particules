@@ -62,8 +62,9 @@ valgrind-eval: $(BINDIR)/$(EVAL_EXEC)
 	valgrind --leak-check=full --track-origins=yes ./$(BINDIR)/$(EVAL_EXEC)
 
 archive:
-	@echo "Creating archive..."
-	@tar -czf research_22.tar.gz -C $(SRCDIR) optimization.c -C ../$(HEADERSDIR) optimization.h -C .. article.pdf
+	@echo "Creating archive research_22.tar.gz ..."
+	@tar -czf research_22.tar.gz $(SRCDIR)/optimization.c $(HEADERSDIR)/optimization.h article.pdf
+	@echo "Archive created : research_22.tar.gz"
 
 $(BINDIR)/$(EVAL_EXEC): $(EVAL_OBJECTS)
 	@mkdir -p $(BINDIR)
