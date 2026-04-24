@@ -2,7 +2,8 @@ SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
 HEADERSDIR = headers
-IMAGESDIR = output
+OUTPUT_DIR = output
+RESULTS_DIR = results
 
 OPTIONS = -Wall -Wextra -std=c99 -I$(HEADERSDIR)
 CC = gcc
@@ -25,12 +26,15 @@ DEBUG = -g
 # Variable to add library if needed, like maths with -lm
 LIBRARIES = -lm
 
-.PHONY: all clean mrproper build run valgrind docs evaluate run-eval valgrind-eval archive
+.PHONY: all clean mrproper build run valgrind docs build-eval run-eval valgrind-eval archive
 
 all: build run
 
 clean:
 	@rm -rf $(OBJDIR)/*
+	@rm -rf $(OUTPUT_DIR)/*
+	@rm -rf $(RESULTS_DIR)/*
+	@rm -f research_22.tar.gz
 	@find docs/ -mindepth 1 ! -name 'Doxyfile' -exec rm -rf {} +
 
 mrproper:
@@ -41,7 +45,7 @@ build:
 	@make $(BINDIR)/$(EXECUTABLE)
 
 run: $(BINDIR)/$(EXECUTABLE)
-	@mkdir -p $(IMAGESDIR)
+	@mkdir -p $(OUTPUT_DIR)
 	@./$(BINDIR)/$(EXECUTABLE)
 
 valgrind: $(BINDIR)/$(EXECUTABLE)
@@ -50,12 +54,15 @@ valgrind: $(BINDIR)/$(EXECUTABLE)
 docs:
 	cd docs && doxygen Doxyfile
 
-evaluate:
+build-eval:
 	@echo "Compiling evaluation..."
 	@make $(BINDIR)/$(EVAL_EXEC)
+	@echo "Evaluation compiled successfully..."
 
 run-eval: $(BINDIR)/$(EVAL_EXEC)
-	@mkdir -p $(IMAGESDIR)
+	@echo "Running evaluation..."
+	@mkdir -p $(OUTPUT_DIR)
+	@mkdir -p $(RESULTS_DIR)
 	@./$(BINDIR)/$(EVAL_EXEC)
 
 valgrind-eval: $(BINDIR)/$(EVAL_EXEC)
