@@ -69,15 +69,9 @@
             <task id="17" name="Tache B.5" color="#8cb6ce" meeting="false" start="2026-02-20" duration="1" complete="0" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true"/>
         </task>
         <task id="21" name="LOT C" color="#000000" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true">
-            <depend id="37" type="2" difference="0" hardness="Strong"/>
             <task id="23" name="Tâche C.1" color="#8cb6ce" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
             <task id="35" name="Tâche C.3" color="#8cb6ce" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-26" thirdDate-constraint="0" expand="true"/>
             <task id="36" name="Tâche C.4" color="#8cb6ce" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-26" thirdDate-constraint="0" expand="true"/>
-        </task>
-        <task id="37" name="LOT D" color="#8cb6ce" meeting="false" start="2026-03-27" duration="1" complete="23" thirdDate="2026-02-26" thirdDate-constraint="0" expand="true">
-            <task id="42" name="Tâche D.1" color="#8cb6ce" meeting="false" start="2026-03-27" duration="1" complete="70" thirdDate="2026-03-02" thirdDate-constraint="0" expand="true"/>
-            <task id="45" name="Tâche D.2" color="#8cb6ce" meeting="false" start="2026-03-27" duration="1" complete="0" thirdDate="2026-03-02" thirdDate-constraint="0" expand="true"/>
-            <task id="47" name="Tâche D.3" color="#8cb6ce" meeting="false" start="2026-03-27" duration="1" complete="0" thirdDate="2026-03-02" thirdDate-constraint="0" expand="true"/>
         </task>
     </tasks>
     <resources>
@@ -95,18 +89,15 @@
         <allocation task-id="7" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="14" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="36" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
-        <allocation task-id="47" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="9" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="15" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="20" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="18" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="19" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="23" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
-        <allocation task-id="42" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="11" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="17" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="35" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
-        <allocation task-id="45" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
     </allocations>
     <vacations/>
     <previous/>
