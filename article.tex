@@ -6,11 +6,15 @@
 \usepackage{graphicx}
 \usepackage{geometry}
 \geometry{margin=1.5cm}
-\usepackage[none]{hyphenat}   
+\usepackage[none]{hyphenat}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{skip=3pt, font=small}
 
 \title{Minimisation De La Distance Maximum Entre Les Particules}
 \author{Groupe 22 : Othmane CHAOUI || Omar DAHMAN || Rayen JALOUALI}
-\date{\today}
+\date{23 avril 2026}
 
 
 \begin{document}
@@ -28,5 +32,93 @@ Notre innovation consiste à regrouper ou rassembler les particules vers le cent
     \item \textbf{T = 0 :} c'est-à-dire la première itération, donc on met les particules au centre de l'environnement avec un vecteur vitesse nul.
     \item \textbf{T > 0 :} on change le vecteur vitesse des particules tel qu'elles se dirigent vers le centre de l'environnement.
 \end{itemize}
+
+\section{Protocole expérimental}
+
+Pour évaluer notre méthode, on a généré \textbf{100 simulations} avec des paramètres choisis aléatoirement. Pour chaque simulation, on compare deux versions : une \textbf{sans notre méthode} (les particules partent vers la droite par défaut) et une \textbf{avec notre méthode}. Les deux simulations tournent pendant $T$ secondes, puis on mesure la distance maximale entre deux particules.
+
+Les paramètres sont tirés au hasard dans les intervalles suivants :
+
+\begin{table}[H]
+\centering
+\caption{Plages des paramètres utilisés}
+\small
+\begin{tabular}{ll}
+\toprule
+Paramètre & Valeurs \\
+\midrule
+$n$ (nombre de particules) & 2 à 50 \\
+$w$ (largeur)              & 10 à 200 \\
+$h$ (hauteur)              & 10 à 200 \\
+$r$ (rayon de répulsion)   & 1 à 20 \\
+$dt$ (pas de temps)        & 0.1 à 1.0 \\
+$T$ (durée en secondes)    & 0 à 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+On mesure trois choses sur chaque simulation :
+\begin{enumerate}
+    \item La \textbf{distance maximale} entre deux particules à la fin (le critère à minimiser).
+    \item Le \textbf{temps de calcul} de notre méthode en millisecondes.
+    \item Le \textbf{rapport d'amélioration} : distance sans méthode divisée par distance avec méthode. Un rapport supérieur à 1 signifie que notre méthode a réduit la distance maximale.
+\end{enumerate}
+
+\section{Résultats}
+
+\subsection{Effet sur la distance maximale}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{results/fig1_crit_vs_n.pdf}
+  \caption{Distance maximale selon $n$}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{results/fig2_crit_vs_T.pdf}
+  \caption{Distance maximale selon $T$}
+\end{figure}
+
+On voit que plus la simulation dure longtemps (grand $T$), plus les particules s'éloignent les unes des autres. La différence entre les deux courbes reste faible : notre méthode n'apporte pas un grand avantage pour les longues simulations.
+
+\begin{table}[H]
+\centering
+\caption{Résultats moyens par tranche de nombre de particules}
+\scriptsize
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+Nb part. & Nb sim. & Dist. opt. & Dist. base & Rapport \\
+\midrule
+2 à 10  & 17 & 6.01 & 6.11 & 1.35 \\
+11 à 20 & 22 & 6.19 & 6.73 & 0.82 \\
+21 à 30 & 19 & 7.40 & 7.63 & 0.78 \\
+31 à 40 & 26 & 7.43 & 6.04 & 0.90 \\
+41 à 50 & 16 & 9.51 & 8.44 & 1.15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Avec peu de particules (2 à 10), le rapport est de 1.35 : notre méthode fonctionne bien. Avec plus de particules (11 à 40), le rapport passe sous 1, ce qui veut dire que notre méthode fait parfois moins bien. Cela s'explique par les répulsions : quand beaucoup de particules convergent vers le même centre, elles se repoussent entre elles et repartent dans toutes les directions.
+
+\subsection{Rapport d'amélioration selon la durée $T$}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{results/fig3_ratio_vs_T.pdf}
+  \caption{Rapport d'amélioration selon $T$ -- au-dessus de la ligne rouge = amélioration}
+\end{figure}
+
+Les points sont éparpillés autour de 1 quelle que soit la durée $T$. Notre méthode améliore les résultats dans \textbf{46 simulations sur 100} et les dégrade dans les 54 autres. Le rapport moyen global est de 0.975.
+
+\subsection{Temps de calcul}
+
+Notre méthode est très rapide : en moyenne 0.1 ms, au maximum 10 ms. Elle ne ralentit pas le programme.
+
+\section{Conclusion}
+
+Notre méthode de convergence vers le centre est simple et très rapide. Elle donne de bons résultats quand il y a peu de particules (moins de 10), mais elle devient moins efficace avec un grand nombre de particules à cause des répulsions mutuelles qui dispersent les particules malgré la convergence initiale.
+
+En résumé, notre méthode \textbf{fonctionne dans certains cas} (46\% des simulations) mais n'est pas fiable de manière générale. Pour de meilleurs résultats, il faudrait une méthode qui tient compte des répulsions pour choisir le placement initial des particules.
 
 \end{document}
