@@ -18,6 +18,7 @@
 #define _ENVIRONNEMENT_H
 
 #include "particules.h" /* for the type "particule" in get_particule */
+#include "vector.h" /* for the type "vec3" in attractor [ADDED FOR LOT E (Tâche E.5)] */ 
 
 /**
  * \typedef \a env
@@ -25,6 +26,16 @@
  * \details This type is used for variables representing an environment of particles.
  */
 typedef struct env_structure* env;
+
+/**
+ * \struct attractor_s
+ * \brief Object that applies a force on particles (attractor or repulsor) *
+ * \note ADDED FOR LOT E (Tâche E.5)
+ */
+typedef struct attractor_s {
+    vec3 position;  /**< position in 3D space */
+    float strength; /**< >0 attractor, <0 repulsor */
+} attractor;
 
 /**
  * \brief   Creates an environment of particles
@@ -51,6 +62,14 @@ env create_environnement(int n, float w, float h, float d, float r, float dt);
  * \param   e   environment as \a env
  */
 void free_environnement(env e);
+
+/**
+ * \brief Adds an attractor or repulsor to the environment.
+ * \param e environment
+ * \param position position in 3D space
+ * \param strength force strength (>0 attractor, <0 repulsor)
+ */
+void add_attractor(env e, vec3 position, float strength);
 
 /**
  * \brief   Returns number of particles
@@ -104,11 +123,15 @@ float get_dt(env e);
 float get_r(env e);
 
 /**
- * \brief   Performs one movement iteration on all particles in the environment
- * \details Moves each particle, handles border collisions (3D), then applies
- *          repulsion between particles that are closer than R.
- *
- * \param   e   environment as \a env
+ * \brief   Performs one simulation iteration on all particles.
+ * \details Computes interaction forces between particles,
+ *          applies attractor/repulsor forces and fluid friction,
+ *          updates particle accelerations and velocities,
+ *          then moves particles and handles 3D border collisions.
+ * \param   e   environment as \a env *
+ * \note MODIFIED FOR LOT E (Tâche E.5):
+ *       particle interactions now use forces and acceleration
+ *       instead of direct velocity modification.
  */
 void move_particules(env e);
 

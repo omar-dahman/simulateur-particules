@@ -14,9 +14,17 @@
  *   - find_neighbors_and_barycenter: uses 3D distance and accumulates z.
  *   - particles_collision_handler: repulsion direction now computed in 3D using vec3.
  *   - move_particules: passes depth to border handler.
+ * (Tâche E.5):
+ *   - struct env_structure: added fields \a objects and object_count.
+ *   - create_environnement: added initialisation of parameters objects and object_count.
+ *   - free_environnement: added free of objects.
+ *   - add_attractor, repulsion_force, attractor_force: new function.
+ *   - find_neighbors_and_barycenter, particles_collision_handler : removed due to the implementation of attraction repulsion forces.
+ *   - move_particules: modified to implement attraction/repulsion forces.
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "environnement.h"
 #include "distributions.h"
 #include "vector.h" /* ADDED FOR LOT E (Tâche E.2) */
@@ -25,6 +33,7 @@
  * \struct env_structure
  * \brief Environment structure
  * \note MODIFIED FOR LOT E (Tâche E.2): added field \a d for depth.
+ * MODIFIED FOR LOT E (Tâche E.5): added field objects and object_count.
  */
 struct env_structure {
     float w;               /**< width  of the environment (x-axis) */
@@ -34,11 +43,14 @@ struct env_structure {
     float r;               /**< interaction radius */
     float dt;              /**< iteration duration */
     particule *particules; /**< array of particles */
+    attractor *objects;    /**< attractors/repulsors present * ADDED FOR LOT E (Tâche E.5) */
+    int object_count; /**< Number of objects (attractors/repulsors) present  ADDED FOR LOT E (Tâche E.5) */
 };
 
 
 env create_environnement(int n, float w, float h, float d, float r, float dt) {
     /* MODIFIED FOR LOT E (Tâche E.2): added parameter d */
+    /* MODIFIED FOR LOT E (Tâche E.5): added parameters objects and object_count */
     env e = malloc(sizeof(struct env_structure));
     if (!e) {
         return NULL;
@@ -50,6 +62,9 @@ env create_environnement(int n, float w, float h, float d, float r, float dt) {
     e->n  = n;
     e->r  = r;
     e->dt = dt;
+
+    e->objects = NULL; /* ADDED FOR LOT E (Tâche E.5) */
+    e->object_count = 0;  /* ADDED FOR LOT E (Tâche E.5) */
 
     e->particules = malloc(n * sizeof(particule));
     if (!e->particules) {
@@ -65,16 +80,41 @@ env create_environnement(int n, float w, float h, float d, float r, float dt) {
                                              1.0f, 0.0f, 0.0f);
     }
 
+    add_attractor(e, vec3_make(w / 2.0f, h / 2.0f, d / 2.0f), 50.0f); // attractor  /* ADDED FOR LOT E (Tâche E.5) */
+    add_attractor(e, vec3_make(w / 4.0f, h / 4.0f, d / 2.0f), -80.0f);  // repulsor  /* ADDED FOR LOT E (Tâche E.5) */
     return e;
 }
 
 void free_environnement(env e) {
+    /* MODIFIED FOR LOT E (Tâche E.5): free parameter objects */
+    if (!e) return ;
     int env_n = get_n(e);
     for (int i = 0; i < env_n; i++) {
         free_particule(e->particules[i]);
     }
     free(e->particules);
+    free(e->objects); /* ADDED FOR LOT E (Tâche E.5) */
     free(e);
+}
+
+/**
+ * \internal
+ * \brief Adds an attractor or repulsor to the environment.
+ * \details Dynamically resizes the environment's objects array and inserts
+ *          a new force source (attractor if strength > 0, repulsor if < 0)
+ *          at the given 3D position. *
+ * \param e         The environment.
+ * \param position  3D position of the attractor/repulsor.
+ * \param strength  Force intensity (positive = attractor, negative = repulsor). *
+ * \note ADDED FOR LOT E (Tâche E.5): introduces external force sources acting on particles during simulation. * 
+ */
+void add_attractor(env e, vec3 position, float strength) {
+    attractor *tmp = realloc(e->objects, (e->object_count + 1) * sizeof(attractor));
+    if (!tmp) return;
+    e->objects = tmp;
+    e->objects[e->object_count].position = position;
+    e->objects[e->object_count].strength = strength;
+    e->object_count++;
 }
 
 int get_n(env e) {
@@ -154,68 +194,112 @@ static void border_collision_handler(particule p,
     set_speed(p, vx, vy, vz);
 }
 
+/* REMOVED FOR LOT E (Tâche E.5):
+ * barycenter-based repulsion system from lot B */
+// /**
+//  * \brief   Find neighbor particles and compute their barycenter
+//  * \details Iterates over all particles and accumulates the positions of those
+//  *          within radius \a env_r of particle \a p (particle \a i is excluded).
+//  *
+//  * \param   e               environment
+//  * \param   p               reference particle
+//  * \param   i               index of reference particle (excluded from search)
+//  * \param   env_r           interaction radius
+//  * \param   env_n           total number of particles
+//  * \param   barycenter      output: sum of neighbor positions (divided later) [MODIFIED FOR LOT E - Tâche E.2: now vec3*]
+//  * \return  number of neighbors found
+//  *
+//  * \note MODIFIED FOR LOT E (Tâche E.2): barycenter is now a vec3 to handle 3D positions.
+//  */
+// static int find_neighbors_and_barycenter(env e, particule p, int i, float env_r, int env_n, vec3 *barycenter) {
+//     int count = 0;
+//     *barycenter = vec3_make(0.0f, 0.0f, 0.0f);
+
+//     for (int j = 0; j < env_n; j++) {
+//         if (i == j) continue;
+
+//         particule p2 = get_particule(e, j);
+//         if (distanceve(p, p2) <= env_r) {
+//             *barycenter = vec3_add(*barycenter, get_pos(p2));
+//             count++;
+//         }
+//     }
+//     return count;
+// }
+
+// /**
+//  * \brief   Particle repulsion handler
+//  * \details Computes the barycenter of neighbors and updates the particle's
+//  *          speed to move away from it. If the barycenter coincides with the
+//  *          particle's position, a random direction is chosen.
+//  *
+//  * \param   p           particle
+//  * \param   nb          number of neighbors
+//  * \param   barycenter  sum of neighbor positions (not yet averaged)
+//  *
+//  * \note MODIFIED FOR LOT E (Tâche E.2): repulsion direction computed in 3D with vec3.
+//  */
+// static void particles_collision_handler(particule p, int nb, vec3 barycenter) {
+//     /* Average to get the actual barycenter */
+//     barycenter = vec3_scale(barycenter, 1.0f / (float)nb);
+
+//     vec3 pos = get_pos(p);
+//     vec3 away = vec3_sub(pos, barycenter);
+
+//     if (vec3_norm(away) < 1e-6f) {
+//         /* Barycenter is on the particle: choose a random direction */
+//         float rx = uniform(-1.0f, 1.0f);
+//         float ry = uniform(-1.0f, 1.0f);
+//         float rz = uniform(-1.0f, 1.0f);
+//         set_speed(p, rx, ry, rz);
+//     } else {
+//         /* set_speed normalizes automatically */
+//         set_speed(p, away.x, away.y, away.z);
+//     }
+// }
 /**
- * \brief   Find neighbor particles and compute their barycenter
- * \details Iterates over all particles and accumulates the positions of those
- *          within radius \a env_r of particle \a p (particle \a i is excluded).
- *
- * \param   e               environment
- * \param   p               reference particle
- * \param   i               index of reference particle (excluded from search)
- * \param   env_r           interaction radius
- * \param   env_n           total number of particles
- * \param   barycenter      output: sum of neighbor positions (divided later) [MODIFIED FOR LOT E - Tâche E.2: now vec3*]
- * \return  number of neighbors found
- *
- * \note MODIFIED FOR LOT E (Tâche E.2): barycenter is now a vec3 to handle 3D positions.
+ * \internal
+ * \brief Computes the repulsion force exerted by \a p2 on \a p1.
+ * \param p1 first particle.
+ * \param p2 second particle.
+ * \param radius interaction radius.
+ * \return  Repulsion force vector applied to p1.
+ * \note ADDED FOR LOT E (Tâche E.5): replaces the barycenter-based repulsion system.
  */
-static int find_neighbors_and_barycenter(env e, particule p, int i, float env_r, int env_n, vec3 *barycenter) {
-    int count = 0;
-    *barycenter = vec3_make(0.0f, 0.0f, 0.0f);
+static vec3 repulsion_force(particule p1, particule p2, float radius) {
+    vec3 dir = vec3_sub(get_pos(p1), get_pos(p2));
+    float dist = vec3_norm(dir);
 
-    for (int j = 0; j < env_n; j++) {
-        if (i == j) continue;
+    if (dist < 1e-5f || dist > radius)
+        return vec3_make(0.0f, 0.0f, 0.0f);
 
-        particule p2 = get_particule(e, j);
-        if (distanceve(p, p2) <= env_r) {
-            *barycenter = vec3_add(*barycenter, get_pos(p2));
-            count++;
-        }
-    }
-    return count;
+    dir = vec3_normalize(dir);
+    float strength = 1.0f / (dist * dist);
+    return vec3_scale(dir, strength);
 }
 
 /**
- * \brief   Particle repulsion handler
- * \details Computes the barycenter of neighbors and updates the particle's
- *          speed to move away from it. If the barycenter coincides with the
- *          particle's position, a random direction is chosen.
- *
- * \param   p           particle
- * \param   nb          number of neighbors
- * \param   barycenter  sum of neighbor positions (not yet averaged)
- *
- * \note MODIFIED FOR LOT E (Tâche E.2): repulsion direction computed in 3D with vec3.
+ * \internal
+ * \brief Computes force applied by an attractor/repulsor \a a on the particle \a p.
+ * \param p the particle.
+ * \param a the attractor.
+ * \return Attractor force vector applied on \a p.
+ * \note ADDED FOR LOT E (Tâche E.5): replaces the barycenter-based repulsion system.
  */
-static void particles_collision_handler(particule p, int nb, vec3 barycenter) {
-    /* Average to get the actual barycenter */
-    barycenter = vec3_scale(barycenter, 1.0f / (float)nb);
+static vec3 attractor_force(particule p, attractor a) {
+    vec3 dir = vec3_sub(a.position, get_pos(p));
+    float dist = vec3_norm(dir);
 
-    vec3 pos = get_pos(p);
-    vec3 away = vec3_sub(pos, barycenter);
+    if (dist < 1e-5f)
+        return vec3_make(0.0f, 0.0f, 0.0f);
 
-    if (vec3_norm(away) < 1e-6f) {
-        /* Barycenter is on the particle: choose a random direction */
-        float rx = uniform(-1.0f, 1.0f);
-        float ry = uniform(-1.0f, 1.0f);
-        float rz = uniform(-1.0f, 1.0f);
-        set_speed(p, rx, ry, rz);
-    } else {
-        /* set_speed normalizes automatically */
-        set_speed(p, away.x, away.y, away.z);
-    }
+    dir = vec3_normalize(dir);
+
+    /* Force decreases with distance */
+    float strength = a.strength / (dist * dist + 1e-3f);
+
+    return vec3_scale(dir, strength);
 }
-
 
 void move_particules(env e) {
     int   env_n  = get_n(e);
@@ -225,21 +309,42 @@ void move_particules(env e) {
     float env_d  = get_d(e);   /* ADDED FOR LOT E (Tâche E.2) */
     float env_r  = get_r(e);
 
+    /* MODIFIED FOR LOT E (Tâche E.5): Apply external forces (attractors / repulsors)*/
+    /* repulsion between nearby particles */
+    for (int i = 0; i < env_n; i++) {
+        particule p1 = get_particule(e, i);
+
+        // friction
+        vec3 vel = get_vel(p1);
+        vec3 drag = vec3_scale(vel, -0.1f);
+        apply_force(p1, drag);
+
+        // attractors
+        for (int j = 0; j < e->object_count; j++) {
+            vec3 f = attractor_force(p1, e->objects[j]);
+            apply_force(p1, f);
+        }
+
+        // repulsion
+        for (int j = i + 1; j < env_n; j++) {
+            particule p2 = get_particule(e, j);
+            vec3 f = repulsion_force(p1, p2, env_r);
+            apply_force(p1, f);
+            apply_force(p2, vec3_negate(f));
+        }
+
+        vec3 noise = vec3_make(
+            uniform(-0.05f, 0.05f),
+            uniform(-0.05f, 0.05f),
+            uniform(-0.05f, 0.05f)
+        );
+        apply_force(p1, noise);
+    }
     /* move every particle and handle border collisions */
     for (int i = 0; i < env_n; i++) {
         particule p = get_particule(e, i);
         move(p, env_dt);
         border_collision_handler(p, env_w, env_h, env_d, get_x(p), get_y(p), get_z(p));
         /* MODIFIED FOR LOT E (Tâche E.2): now passes get_z and env_d */
-    }
-
-    /* repulsion between nearby particles */
-    for (int i = 0; i < env_n; i++) {
-        particule p = get_particule(e, i);
-        vec3 barycenter;
-        int nb = find_neighbors_and_barycenter(e, p, i, env_r, env_n, &barycenter);
-        if (nb > 0) {
-            particles_collision_handler(p, nb, barycenter);
-        }
     }
 }
