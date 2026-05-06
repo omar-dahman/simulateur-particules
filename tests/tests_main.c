@@ -1,5 +1,5 @@
 /**
- * \file    tests.c
+ * \file    tests_main.c
  * \author  Othmane CHAOUI
  * \date    2026-04-23
  *
