@@ -16,7 +16,7 @@
 #define EPSILON 1e-6f
 #define M_PI 3.14159265358979323846
 
-static void test_vec3_make(void)
+void test_vec3_make()
 {
     vec3 v = vec3_make(1.0f, 2.0f, 3.0f);
     CU_ASSERT_DOUBLE_EQUAL(v.x, 1.0f, EPSILON);
@@ -24,7 +24,7 @@ static void test_vec3_make(void)
     CU_ASSERT_DOUBLE_EQUAL(v.z, 3.0f, EPSILON);
 }
 
-static void test_vec3_copy(void)
+void test_vec3_copy()
 {
     vec3 v = {4.0f, 5.0f, 6.0f};
     vec3 c = vec3_copy(v);
@@ -33,7 +33,7 @@ static void test_vec3_copy(void)
     CU_ASSERT_DOUBLE_EQUAL(c.z, 6.0f, EPSILON);
 }
 
-static void test_vec3_add(void)
+void test_vec3_add()
 {
     vec3 a = {1.0f, 2.0f, 3.0f};
     vec3 b = {4.0f, 5.0f, 6.0f};
@@ -43,7 +43,7 @@ static void test_vec3_add(void)
     CU_ASSERT_DOUBLE_EQUAL(c.z, 9.0f, EPSILON);
 }
 
-static void test_vec3_sub(void)
+void test_vec3_sub()
 {
     vec3 a = {4.0f, 5.0f, 6.0f};
     vec3 b = {1.0f, 2.0f, 3.0f};
@@ -53,7 +53,7 @@ static void test_vec3_sub(void)
     CU_ASSERT_DOUBLE_EQUAL(c.z, 3.0f, EPSILON);
 }
 
-static void test_vec3_scale(void)
+void test_vec3_scale()
 {
     vec3 v = {2.0f, 3.0f, 4.0f};
     vec3 r = vec3_scale(v, 2.5f);
@@ -62,7 +62,7 @@ static void test_vec3_scale(void)
     CU_ASSERT_DOUBLE_EQUAL(r.z, 10.0f, EPSILON);
 }
 
-static void test_vec3_negate(void)
+void test_vec3_negate()
 {
     vec3 v = {1.0f, -2.0f, 3.0f};
     vec3 n = vec3_negate(v);
@@ -71,21 +71,21 @@ static void test_vec3_negate(void)
     CU_ASSERT_DOUBLE_EQUAL(n.z, -3.0f, EPSILON);
 }
 
-static void test_vec3_norm(void)
+void test_vec3_norm()
 {
     vec3 v = {3.0f, 4.0f, 0.0f};
     float norm = vec3_norm(v);
     CU_ASSERT_DOUBLE_EQUAL(norm, 5.0f, EPSILON);
 }
 
-static void test_vec3_norm2(void)
+void test_vec3_norm2()
 {
     vec3 v = {3.0f, 4.0f, 0.0f};
     float norm2 = vec3_norm2(v);
     CU_ASSERT_DOUBLE_EQUAL(norm2, 25.0f, EPSILON);
 }
 
-static void test_vec3_normalize(void)
+void test_vec3_normalize()
 {
     vec3 v = {3.0f, 4.0f, 0.0f};
     vec3 n = vec3_normalize(v);
@@ -93,7 +93,7 @@ static void test_vec3_normalize(void)
     CU_ASSERT_DOUBLE_EQUAL(norm, 1.0f, EPSILON);
 }
 
-static void test_vec3_normalize_zero(void)
+void test_vec3_normalize_zero()
 {
     vec3 zero = {0.0f, 0.0f, 0.0f};
     vec3 n = vec3_normalize(zero);
@@ -102,7 +102,7 @@ static void test_vec3_normalize_zero(void)
     CU_ASSERT_DOUBLE_EQUAL(n.z, 0.0f, EPSILON);
 }
 
-static void test_vec3_dot(void)
+void test_vec3_dot()
 {
     vec3 a = {1.0f, 0.0f, 0.0f};
     vec3 b = {0.0f, 1.0f, 0.0f};
@@ -110,7 +110,7 @@ static void test_vec3_dot(void)
     CU_ASSERT_DOUBLE_EQUAL(dot, 0.0f, EPSILON);
 }
 
-static void test_vec3_cross(void)
+void test_vec3_cross()
 {
     vec3 a = {1.0f, 0.0f, 0.0f};
     vec3 b = {0.0f, 1.0f, 0.0f};
@@ -120,7 +120,7 @@ static void test_vec3_cross(void)
     CU_ASSERT_DOUBLE_EQUAL(c.z, 1.0f, EPSILON);
 }
 
-static void test_vec3_angle(void)
+void test_vec3_angle()
 {
     vec3 a = {1.0f, 0.0f, 0.0f};
     vec3 b = {0.0f, 1.0f, 0.0f};
@@ -128,7 +128,7 @@ static void test_vec3_angle(void)
     CU_ASSERT_DOUBLE_EQUAL(angle, M_PI / 2.0, EPSILON);
 }
 
-static void test_vec3_distance(void)
+void test_vec3_distance()
 {
     vec3 a = {1.0f, 0.0f, 0.0f};
     vec3 b = {4.0f, 4.0f, 0.0f};
@@ -136,7 +136,7 @@ static void test_vec3_distance(void)
     CU_ASSERT_DOUBLE_EQUAL(dist, 5.0f, EPSILON);
 }
 
-static void test_vec3_project(void)
+void test_vec3_project()
 {
     vec3 v = {3.0f, 4.0f, 0.0f};
     vec3 onto = {1.0f, 0.0f, 0.0f};
@@ -146,7 +146,7 @@ static void test_vec3_project(void)
     CU_ASSERT_DOUBLE_EQUAL(proj.z, 0.0f, EPSILON);
 }
 
-static void test_vec3_reflect(void)
+void test_vec3_reflect()
 {
     vec3 v = {1.0f, -1.0f, 0.0f};
     vec3 n = {0.0f, 1.0f, 0.0f};
@@ -156,7 +156,7 @@ static void test_vec3_reflect(void)
     CU_ASSERT_DOUBLE_EQUAL(r.z, 0.0f, EPSILON);
 }
 
-static void test_vec3_equal(void)
+void test_vec3_equal()
 {
     vec3 a = {1.0f, 2.0f, 3.0f};
     vec3 b = {1.0001f, 2.0001f, 3.0001f};
@@ -164,39 +164,33 @@ static void test_vec3_equal(void)
     CU_ASSERT_TRUE(eq);
 }
 
-CU_ErrorCode test_vector_register_suite(void)
+CU_ErrorCode test_vector_register_suite()
 {
     CU_pSuite suite = CU_add_suite("Vector 3D", NULL, NULL);
     if (!suite)
         return CU_get_error();
 
-    /* Tests de base */
     CU_add_test(suite, "vec3_make", test_vec3_make);
     CU_add_test(suite, "vec3_copy", test_vec3_copy);
 
-    /* Opérations arithmétiques */
     CU_add_test(suite, "vec3_add", test_vec3_add);
     CU_add_test(suite, "vec3_sub", test_vec3_sub);
     CU_add_test(suite, "vec3_scale", test_vec3_scale);
     CU_add_test(suite, "vec3_negate", test_vec3_negate);
 
-    /* Normes et normalisation */
     CU_add_test(suite, "vec3_norm", test_vec3_norm);
     CU_add_test(suite, "vec3_norm2", test_vec3_norm2);
     CU_add_test(suite, "vec3_normalize", test_vec3_normalize);
     CU_add_test(suite, "vec3_normalize_zero", test_vec3_normalize_zero);
 
-    /* Produits scalaires et vectoriels */
     CU_add_test(suite, "vec3_dot", test_vec3_dot);
     CU_add_test(suite, "vec3_cross", test_vec3_cross);
 
-    /* Géométrie */
     CU_add_test(suite, "vec3_angle", test_vec3_angle);
     CU_add_test(suite, "vec3_distance", test_vec3_distance);
     CU_add_test(suite, "vec3_project", test_vec3_project);
     CU_add_test(suite, "vec3_reflect", test_vec3_reflect);
 
-    /* Utilitaires */
     CU_add_test(suite, "vec3_equal", test_vec3_equal);
 
     return CUE_SUCCESS;
