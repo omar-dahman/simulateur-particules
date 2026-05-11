@@ -11,11 +11,10 @@ EXECUTABLE = simparticles
 TEST_EXEC = test
 
 ALL_HEADERS = $(wildcard $(HEADERSDIR)/*.h) $(wildcard $(TESTS_DIR)/*.h)
-# ALL_SOURCES = $(wildcard $(SRCDIR)/*.c $(wildcard $(TESTS_DIR)/*.c))
-# ALL_OBJECTS = $(wildcard $(OBJDIR)/*.o)
 # simulation sources and objects
 SIM_SOURCES = $(wildcard $(SRCDIR)/*.c)
 SIM_OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SIM_SOURCES))
+SIM_OBJECTS_NO_MAIN = $(filter-out $(OBJDIR)/main.o, $(SIM_OBJECTS))
 # tests sources and objects
 TEST_SOURCES = $(wildcard $(TESTS_DIR)/*.c)
 TEST_OBJECTS = $(patsubst $(TESTS_DIR)/%.c, $(OBJDIR)/%.o, $(TEST_SOURCES))
@@ -76,7 +75,7 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.c $(ALL_HEADERS)
 
 # === tests part ===
 
-$(BINDIR)/$(TEST_EXEC): $(SIM_OBJECTS) $(TEST_OBJECTS)
+$(BINDIR)/$(TEST_EXEC): $(SIM_OBJECTS_NO_MAIN) $(TEST_OBJECTS)
 	@mkdir -p $(BINDIR)
 	$(CC) $(OPTIONS) $(DEBUG) -o $@ $^ $(LIBRARIES)
 
