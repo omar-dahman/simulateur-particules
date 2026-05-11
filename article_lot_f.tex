@@ -1,0 +1,305 @@
+\documentclass[12pt,a4paper]{report}
+
+% ======================================================================================
+% imports des bibliotheques
+% ======================================================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{times}
+\usepackage{xcolor}
+
+% ======================================================================================
+% Configurations Generaux
+% ======================================================================================
+
+\geometry{margin=2.5cm}
+
+% Configuration des blocs pour le code C
+\lstset{
+    language=C,                    % Langage utilisé
+    basicstyle=\ttfamily\small,    % Police monospace de taille réduite
+    keywordstyle=\color{blue}\bfseries,  % Mots-clés en bleu gras
+    commentstyle=\color{green!60!black}\itshape,  % Commentaires en vert italique
+    stringstyle=\color{red},        % Chaînes de caractères en rouge
+    numbers=left,                   % Numéros de lignes à gauche
+    numberstyle=\tiny\color{gray},  % Style des numéros de ligne
+    frame=single,                   % Encadrement simple
+    breaklines=true,                % Retour à la ligne automatique
+    showstringspaces=false,         % Ne pas montrer les espaces dans les chaînes
+    tabsize=4,                      % Taille des tabulations
+    captionpos=b                    % Position des légendes en bas
+}
+
+% ======================================================================================
+% Debut du Document
+% ======================================================================================
+
+\begin{document}
+\sloppy
+
+% ======================================================================================
+% Premiere page
+% ======================================================================================
+\begin{titlepage}
+    \centering
+    
+    % Logo de l'école
+    \includegraphics[width=0.5\textwidth]{logo_ensiie.jpeg}
+    
+    \vspace{0.5cm}
+    
+    % Nom complet de l'école
+    {\large L'École Nationale Supérieure d'Informatique pour l'Industrie et l'Entreprise}
+    
+    \vspace{2cm}
+    
+    % Ligne horizontale supérieure
+    \noindent\makebox[\linewidth]{\rule{\textwidth}{0.4pt}}
+    
+    \vspace{1cm}
+    
+    % Titre principal du projet
+    {\LARGE \textbf{Article du LOT F}}
+    
+    \vspace{1cm}
+    
+    % Ligne horizontale inférieure
+    \noindent\makebox[\linewidth]{\rule{\textwidth}{0.4pt}}
+    
+    \vspace{2cm}
+    
+    % Informations du projet alignées à gauche
+    \begin{flushleft}
+        \textbf{Module :} Programmation impérative - PRIM12 \\
+        \textbf{Semesttre :} S2 \\
+        \textbf{Filière :} FISE + FISA \\
+        \textbf{Groupe :} 22 \\[01cm]
+        \textbf{Réalisé par :} 
+        \begin{itemize}
+          \item Othmane CHAOUI
+          \item Omar DAHMAN
+          \item Rayen JALOUALI
+        \end{itemize}
+        \vspace{1cm}
+        \textbf{Encadrant :} M. Dimitri WATEL \\
+    \end{flushleft}
+    
+    \vfill
+    
+    % Date de remise
+    \today
+    
+\end{titlepage}
+
+% Table des matières
+\tableofcontents
+\newpage
+
+% ======================================================================================
+\chapter{Introduction}
+% ======================================================================================
+
+\section{Objectifs du projet}
+
+Ce projet vise à representer des particules dans un environnement, tout en gerant les reactions
+et les interactions des particules entrer eux memes et avec les bords de notre environnement, ce qui
+ramene à eds calcules eds positions et du vitesse des particules à travers des notions mathématiques
+pour enfin automatisrer les mouvements des particules et les simuler sous forme des images (.pbm)
+ou des representations dans la console.
+
+\section{Outils \& technologies}
+
+\begin{itemize}
+    \item Language de programmation C
+    \item \textbf{IDE : } VScode
+    \item GanttProject
+    \item Valgrind
+    \item CUnit
+    \item Doxygen
+    \item Git
+\end{itemize}
+
+% ======================================================================================
+\chapter{LOT F}
+% ======================================================================================
+
+% ======================================================================================
+\section{Tâche F.1}
+% ======================================================================================
+
+something
+
+% ======================================================================================
+\section{Tâche F.3}
+% ======================================================================================
+
+% ======================================================================================
+\section{Tâche F.4}
+% ======================================================================================
+
+\subsection*{1. Expression de la distance au carré $D^2$}
+
+Par définition:
+$$D^2 = |e^{i\xi_1} - e^{i\xi_2}|^2$$
+En développant ce module au carré ($|z|^2 = z\overline{z}$), on obtient :
+$$D^2 = (e^{i\xi_1} - e^{i\xi_2})(e^{-i\xi_1} - e^{-i\xi_2})$$
+$$D^2 = e^{i\xi_1}e^{-i\xi_1} + e^{i\xi_2}e^{-i\xi_2} - e^{i\xi_1}e^{-i\xi_2} - e^{-i\xi_1}e^{i\xi_2}$$
+$$D^2 = 1 + 1 - e^{i(\xi_1 - \xi_2)} - e^{-i(\xi_1 - \xi_2)}$$
+En posant $\theta = \xi_1 - \xi_2$ et en utilisant la formule d'Euler ($e^{i\theta} + e^{-i\theta} = 2\cos(\theta)$), l'expression se simplifie en :
+$$\fcolorbox{red}{white}{$D^2 = 2 - 2\cos(\theta)$}$$
+
+\subsection*{2. Loi de densité de l'angle $\theta \pmod{2\pi}$}
+
+Soient $\xi_1$ et $\xi_2$ deux variables aléatoires indépendantes et identiquement distribuées selon une loi uniforme sur $[0, 2\pi]$. Leurs densités de probabilité respectives sont données par $f(x) = \frac{1}{2\pi}\mathbf{1}_{[0, 2\pi]}(x)$.
+
+Posons la variable aléatoire $Z = \xi_1 - \xi_2$. Par indépendance de $\xi_1$ et $\xi_2$, la densité de $Z$, notée $f_Z$, s'obtient par le produit de convolution de la densité de $\xi_1$ et de celle de $-\xi_2$ :
+$$f_Z(z) = \int_{-\infty}^{+\infty} f(x) f(x - z) \, dx = \frac{1}{4\pi^2} \int_{0}^{2\pi} \mathbf{1}_{[0, 2\pi]}(x - z) \, dx$$
+
+Pour que l'intégrande soit non nul, il faut simultanément $0 \le x \le 2\pi$ et $0 \le x - z \le 2\pi$, ce qui équivaut à $\max(0, z) \le x \le \min(2\pi, 2\pi + z)$. 
+On distingue alors deux cas pour le support de $Z$, qui est $[-2\pi, 2\pi]$ :
+\begin{itemize}
+    \item Si $z \in [0, 2\pi]$, l'intervalle d'intégration est $[z, 2\pi]$. L'intégrale vaut $2\pi - z$.
+    \item Si $z \in [-2\pi, 0]$, l'intervalle d'intégration est $[0, 2\pi + z]$. L'intégrale vaut $2\pi + z$.
+\end{itemize}
+On peut synthétiser ces deux cas sous la forme d'une loi triangulaire :
+$$f_Z(z) = \frac{2\pi - |z|}{4\pi^2} \mathbf{1}_{[-2\pi, 2\pi]}(z)$$
+
+Nous cherchons la loi de $\theta = Z \pmod{2\pi}$, qui prend ses valeurs dans l'intervalle $[0, 2\pi)$. 
+Soit $h : \mathbb{R} \to \mathbb{R}$ une fonction mesurable bornée quelconque. D'après le théorème de transfert :
+$$\mathbb{E}[h(\theta)] = \mathbb{E}[h(Z \pmod{2\pi})] = \int_{-2\pi}^{2\pi} h(z \pmod{2\pi}) f_Z(z) \, dz$$
+
+On scinde cette intégrale sur les intervalles de longueur $2\pi$ constituant le support de $Z$ :
+$$\mathbb{E}[h(\theta)] = \int_{-2\pi}^{0} h(z + 2\pi) f_Z(z) \, dz + \int_{0}^{2\pi} h(z) f_Z(z) \, dz$$
+
+Dans la première intégrale, appliquons le changement de variable affine $x = z + 2\pi$ (donc $dz = dx$ et $x \in [0, 2\pi]$) :
+$$\int_{-2\pi}^{0} h(z + 2\pi) f_Z(z) \, dz = \int_{0}^{2\pi} h(x) f_Z(x - 2\pi) \, dx$$
+
+En regroupant les deux termes, on obtient :
+$$\mathbb{E}[h(\theta)] = \int_{0}^{2\pi} h(x) \left( f_Z(x - 2\pi) + f_Z(x) \right) \, dx$$
+
+Par identification dans l'espace des fonctions mesurables positives, on en déduit que la densité de $\theta$ sur l'intervalle $[0, 2\pi]$ est :
+$$f_\theta(x) = f_Z(x - 2\pi) + f_Z(x)$$
+
+Évaluons cette somme pour $x \in [0, 2\pi]$ :
+\begin{align*}
+    f_Z(x) &= \frac{2\pi - x}{4\pi^2} \\
+    f_Z(x - 2\pi) &= \frac{2\pi - |x - 2\pi|}{4\pi^2} = \frac{2\pi - (2\pi - x)}{4\pi^2} = \frac{x}{4\pi^2}
+\end{align*}
+
+D'où l'addition des deux termes :
+$$f_\theta(x) = \frac{2\pi - x}{4\pi^2} + \frac{x}{4\pi^2} = \frac{2\pi}{4\pi^2} = \frac{1}{2\pi}$$
+
+Ainsi, la loi de $\theta \pmod{2\pi}$ est une loi uniforme sur $[0, 2\pi]$, avec pour densité :
+
+\fcolorbox{red}{white}{$f_\theta(x) = \frac{1}{2\pi} \mathbf{1}_{[0, 2\pi]}(x)$}$$
+
+\subsection*{3. Calcul de la probabilité exacte $\mathbb{P}(D \le R)$}
+
+Nous cherchons la probabilité d'une collision, c'est-à-dire $\mathbb{P}(D \le R)$, sachant que les particules ont des rayons qui justifient cette distance de collision $R$.
+Puisque les distances sont positives, $D \le R \iff D^2 \le R^2$. En utilisant l'expression trouvée précédemment :
+$$2 - 2\cos(\theta) \le R^2 \iff \cos(\theta) \ge 1 - \frac{R^2}{2}$$
+
+\textbf{Etude de cas selon la valeur de R :}
+
+\begin{itemize}
+    \item \textbf{Cas où } $R \ge 2$ \textbf{:} 
+    Le diamètre du cercle trigonométrique étant de 2, la distance maximale entre deux particules après un pas de rayon 1 est exactement 2. Par conséquent, si le rayon de collision $R$ est supérieur ou égal à 2, les particules entreront toujours en collision.
+    $$\fcolorbox{red}{white}{$\mathbb{P}(D \le R) = 1$}$$
+    
+    \item \textbf{Cas où } $R < 2$ \textbf{:}
+    L'inéquation $\cos(\theta) \ge 1 - \frac{R^2}{2}$ doit être résolue pour $\theta \in [0, 2\pi]$.
+    La fonction cosinus est supérieure à cette valeur sur deux intervalles symétriques : $[0, \theta_0]$ et $[2\pi - \theta_0, 2\pi]$, avec $\theta_0 = \arccos(1 - \frac{R^2}{2})$.
+    La longueur totale de cet intervalle est $2\theta_0$.
+    Puisque $\theta$ suit une loi uniforme, la probabilité est la mesure de cet intervalle divisée par l'amplitude totale $2\pi$ :
+    $$\fcolorbox{red}{white}{$\mathbb{P}(D \le R) = \frac{2\arccos(1 - \frac{R^2}{2})}{2\pi} = \frac{\arccos(1 - \frac{R^2}{2})}{\pi}$}$$
+\end{itemize}
+
+\subsection*{4. Expérimentation : Simulation et Tracé}
+
+
+Afin de valider notre modèle analytique, j'ai implémenté un simulateur en Python utilisant la méthode de Monte-Carlo. Le script ci-dessous génère $10^5$ paires de sauts aléatoires (Question 4), compte la fréquence des collisions pour différentes valeurs de $R$ (Question 5), et trace la courbe comparative (Question 6).
+
+
+\begin{lstlisting}[language=Python, caption=Simulation de Monte-Carlo et tracé de la probabilité de choc]
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Rayons R à tester, de 0.0 à 2.5
+R_values = np.linspace(0, 2.5, 50)
+NB_SIMULATIONS = 100000
+
+# 1. Calcul de la probabilité théorique (Formule exacte)
+def proba_theorique(R):
+    if R >= 2.0:
+        return 1.0
+    else:
+        return np.arccos(1.0 - (R**2) / 2.0) / np.pi
+
+prob_theo = [proba_theorique(r) for r in R_values]
+prob_empirique = []
+
+# =========================================================
+# QUESTIONS 4 ET 5
+# =========================================================
+for r in R_values:
+    # Question 4 : Simuler 10^5 paires de sauts aléatoires
+    # On tire des angles aléatoires uniformes sur [0, 2pi]
+    xi1 = np.random.uniform(0, 2 * np.pi, NB_SIMULATIONS)
+    xi2 = np.random.uniform(0, 2 * np.pi, NB_SIMULATIONS)
+    
+    # Calcul de la distance au carré D^2 = 2 - 2cos(theta)
+    dist_carre = 2.0 - 2.0 * np.cos(xi1 - xi2)
+    
+    # Question 5 : Compter la fréquence des cas où D <= R
+    # (ce qui équivaut à D^2 <= R^2 car les distances sont positives)
+    nombre_de_chocs = np.sum(dist_carre <= r**2)
+    frequence = nombre_de_chocs / NB_SIMULATIONS
+    
+    prob_empirique.append(frequence)
+
+# =========================================================
+# QUESTION 6
+# =========================================================
+plt.figure(figsize=(10, 6))
+
+# Tracé de la courbe théorique
+plt.plot(R_values, prob_theo, label="Théorique (Formule)", color='blue', linewidth=2)
+
+# Tracé des fréquences empiriques
+plt.scatter(R_values, prob_empirique, label="Empirique (Simulation)", color='red', marker='+')
+
+plt.title("Probabilité de choc en fonction du rayon R")
+plt.xlabel("Rayon R")
+plt.ylabel("Probabilité de collision P(D <= R)")
+plt.axvline(x=2.0, color='gray', linestyle='--', label='R = 2 (Certitude de collision)')
+plt.legend()
+plt.grid(True, linestyle=':', alpha=0.7)
+
+# Sauvegarde de la figure
+plt.savefig("courbe_proba_choc.png", dpi=300, bbox_inches='tight')
+\end{lstlisting}
+
+\textbf{Analyse des résultats :}
+La figure \ref{fig:plot} présente les résultats générés par notre script Python. Nous observons une superposition parfaite entre la courbe bleue continue (tracée à partir de notre formule mathématique exacte $\frac{\arccos(1 - R^2/2)}{\pi}$) et les points rouges (représentant la fréquence expérimentale sur $10^5$ sauts). Cela valide expérimentalement notre modèle théorique. On remarque également que pour toute valeur de $R \ge 2$, la probabilité atteint un plateau à $1$, confirmant que les particules se percutent systématiquement dans ce cas de figure.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plot.png}
+    \caption{Comparaison entre la probabilité théorique et la fréquence empirique de choc}
+    \label{fig:plot}
+\end{figure}
+
+
+
+\end{document}
