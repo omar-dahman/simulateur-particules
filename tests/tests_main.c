@@ -13,6 +13,7 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 
+// each one of these functions is declared in other test functions
 extern CU_ErrorCode test_vector_register_suite();
 // extern CU_ErrorCode test_forces_register_suite();
 // extern CU_ErrorCode test_movement_camera_register_suite(void);

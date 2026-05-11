@@ -6,6 +6,8 @@
  * \brief   Tests of 3D and vector library
  * \details This file contains the tests on changes made
  *          by \b Task \b E.2
+ *          It verifies all vector operations including creation,
+ *          arithmetic, geometry and transformations.
  */
 
 #include <math.h>
@@ -164,33 +166,48 @@ void test_vec3_equal()
     CU_ASSERT_TRUE(eq);
 }
 
+/**
+ * \brief   Registers all vector tests with CUnit
+ * \details Creates a test suite named "Vector 3D" and adds all
+ *          test functions to it. This function is called from
+ *          tests_main.c to include these tests in the test run.
+ *
+ * \return  CUE_SUCCESS if suite creation succeeded,
+ *          error code otherwise.
+ */
 CU_ErrorCode test_vector_register_suite()
 {
     CU_pSuite suite = CU_add_suite("Vector 3D", NULL, NULL);
     if (!suite)
         return CU_get_error();
 
+    /* Construction / copy tests */
     CU_add_test(suite, "vec3_make", test_vec3_make);
     CU_add_test(suite, "vec3_copy", test_vec3_copy);
 
+    /* Basic arithmetic operations */
     CU_add_test(suite, "vec3_add", test_vec3_add);
     CU_add_test(suite, "vec3_sub", test_vec3_sub);
     CU_add_test(suite, "vec3_scale", test_vec3_scale);
     CU_add_test(suite, "vec3_negate", test_vec3_negate);
 
+    /* Norm and normalization */
     CU_add_test(suite, "vec3_norm", test_vec3_norm);
     CU_add_test(suite, "vec3_norm2", test_vec3_norm2);
     CU_add_test(suite, "vec3_normalize", test_vec3_normalize);
     CU_add_test(suite, "vec3_normalize_zero", test_vec3_normalize_zero);
 
+    /* Dot and cross products */
     CU_add_test(suite, "vec3_dot", test_vec3_dot);
     CU_add_test(suite, "vec3_cross", test_vec3_cross);
 
+    /* Geometric operations */
     CU_add_test(suite, "vec3_angle", test_vec3_angle);
     CU_add_test(suite, "vec3_distance", test_vec3_distance);
     CU_add_test(suite, "vec3_project", test_vec3_project);
     CU_add_test(suite, "vec3_reflect", test_vec3_reflect);
 
+    /* Utility functions */
     CU_add_test(suite, "vec3_equal", test_vec3_equal);
 
     return CUE_SUCCESS;
