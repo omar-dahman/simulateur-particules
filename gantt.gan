@@ -1,14 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="PRIN12" company="" webLink="http://" view-date="2026-02-23" view-index="0" gantt-divider-location="414" resource-divider-location="300" version="2.8.10" locale="fr">
+<?xml version="1.0" encoding="UTF-8"?><project name="PRIN12" company="" webLink="http://" view-date="2026-03-16" view-index="0" gantt-divider-location="411" resource-divider-location="300" version="3.3.3322" locale="en_US">
     <description/>
     <view zooming-state="default:2" id="gantt-chart">
-        <field id="tpd3" name="Nom" width="223" order="0"/>
-        <field id="tpd4" name="Date de début" width="103" order="1"/>
-        <field id="tpd5" name="Date de fin" width="84" order="2"/>
+        <field id="tpd3" name="Name" width="215" order="0"/>
+        <field id="tpd4" name="Begin date" width="99" order="1"/>
+        <field id="tpd5" name="End date" width="81" order="2"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
         <option id="color.recent"><![CDATA[#ffff00]]></option>
     </view>
     <view id="resource-table">
-        <field id="0" name="Nom" width="210" order="0"/>
-        <field id="1" name="Rôle par défaut" width="86" order="1"/>
+        <field id="0" name="Name" width="210" order="0"/>
+        <field id="1" name="Default role" width="86" order="1"/>
     </view>
     <!-- -->
     <calendars>
@@ -34,12 +38,12 @@
             <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
             <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
         </taskproperties>
-        <task id="0" name="LOT A" color="#8cb6ce" meeting="false" start="2026-02-13" duration="2" complete="33" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true">
+        <task id="0" uid="60034d87bd0a41ae8e792e3d7c474381" name="LOT A" color="#8cb6ce" meeting="false" start="2026-02-13" duration="2" complete="33" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true">
             <depend id="2" type="2" difference="0" hardness="Strong"/>
-            <task id="6" name="Tache A.1" color="#8cb6ce" meeting="false" start="2026-02-13" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
-            <task id="7" name="Tache A.2" color="#8cb6ce" meeting="false" start="2026-02-13" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
-            <task id="9" name="Tache A.3" color="#ffff00" meeting="false" start="2026-02-13" duration="2" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true">
-                <task id="18" name="tache A.3: se mettre au contexte" color="#ffff00" meeting="false" start="2026-02-13" duration="1" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" priority="4" expand="true">
+            <task id="6" uid="19790b796e284089b38265d6f0fcca88" name="Tache A.1" color="#8cb6ce" meeting="false" start="2026-02-13" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
+            <task id="7" uid="5df26634637146f99f3ace58a82b3aca" name="Tache A.2" color="#8cb6ce" meeting="false" start="2026-02-13" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
+            <task id="9" uid="f447c3688493445ab23a54c4b1fc9183" name="Tache A.3" color="#ffff00" meeting="false" start="2026-02-13" duration="2" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true">
+                <task id="18" uid="4c78e09e01ec46f2b9b0892c7405033a" name="tache A.3: se mettre au contexte" color="#ffff00" meeting="false" start="2026-02-13" duration="1" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" priority="4" expand="true">
                     <notes><![CDATA[- lire tous le projet
 - comprendre ma tache
 - analyser les composantes et les taches
@@ -47,31 +51,37 @@
 - comprendre le processus et l'enchainement des executions/taches
 - implementer des quelques diagrammes UML pour comprendre davantage le projet (e.g: sequence, activite...)]]></notes>
                 </task>
-                <task id="19" name="tache A.3: ajout fichier environnement.h" color="#ffff00" meeting="false" start="2026-02-16" duration="1" complete="100" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true">
+                <task id="19" uid="185b2a54303a462680bced9e9075a412" name="tache A.3: ajout fichier environnement.h" color="#ffff00" meeting="false" start="2026-02-16" duration="1" complete="100" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true">
                     <notes><![CDATA[- ecrire les declarations des fonctions du fichier environnement.h
 - faire les commentaires]]></notes>
                 </task>
             </task>
-            <task id="10" name="Tache A.4" color="#8cb6ce" meeting="false" start="2026-02-13" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
-            <task id="11" name="Tache A.5" color="#8cb6ce" meeting="false" start="2026-02-13" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
+            <task id="10" uid="045178f62699402c936046363de117db" name="Tache A.4" color="#8cb6ce" meeting="false" start="2026-02-13" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
+            <task id="11" uid="327d07ee4a6b4d159e6c79c20592c17c" name="Tache A.5" color="#8cb6ce" meeting="false" start="2026-02-13" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
         </task>
-        <task id="2" name="LOT B" color="#8cb6ce" meeting="false" start="2026-02-20" duration="4" complete="20" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true">
+        <task id="2" uid="4bba4f9bfb8b4d67a001b5db50ded45b" name="LOT B" color="#8cb6ce" meeting="false" start="2026-02-20" duration="4" complete="20" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true">
             <depend id="21" type="2" difference="0" hardness="Strong"/>
-            <task id="12" name="Tache B.1" color="#8cb6ce" meeting="false" start="2026-02-20" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
-            <task id="14" name="Tache B.2" color="#8cb6ce" meeting="false" start="2026-02-20" duration="1" complete="0" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true"/>
-            <task id="15" name="Tache B.3" color="#ffff00" meeting="false" start="2026-02-25" duration="1" complete="100" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true">
-                <task id="20" name="Tâche B.3: ajout fichier environnement.c" color="#ffff00" meeting="false" start="2026-02-25" duration="1" complete="100" thirdDate="2026-02-17" thirdDate-constraint="0" expand="true">
+            <task id="12" uid="79f38cdc72b449e08a48bf17cd805be5" name="Tache B.1" color="#8cb6ce" meeting="false" start="2026-02-20" duration="1" complete="0" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
+            <task id="14" uid="724cce0b042047efb31c39e4a4b77fde" name="Tache B.2" color="#8cb6ce" meeting="false" start="2026-02-20" duration="1" complete="0" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true"/>
+            <task id="15" uid="0700add49d1547009f7b327eb69d5508" name="Tache B.3" color="#ffff00" meeting="false" start="2026-02-25" duration="1" complete="100" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true">
+                <task id="20" uid="2cae0495ed68432da8cb49f1e112464a" name="Tâche B.3: ajout fichier environnement.c" color="#ffff00" meeting="false" start="2026-02-25" duration="1" complete="100" thirdDate="2026-02-17" thirdDate-constraint="0" expand="true">
                     <notes><![CDATA[- écrire les implementations des fonctions et des structures declarees dans environnement.h
 - ajouter la tâche à GanttProject]]></notes>
                 </task>
             </task>
-            <task id="16" name="Tache B.4" color="#8cb6ce" meeting="false" start="2026-02-20" duration="1" complete="0" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true"/>
-            <task id="17" name="Tache B.5" color="#8cb6ce" meeting="false" start="2026-02-20" duration="1" complete="0" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true"/>
+            <task id="16" uid="d4739a759f5347319d36ab60da003709" name="Tache B.4" color="#8cb6ce" meeting="false" start="2026-02-20" duration="1" complete="0" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true"/>
+            <task id="17" uid="9daa9c165a2544c5ba50a5ae238519f5" name="Tache B.5" color="#8cb6ce" meeting="false" start="2026-02-20" duration="1" complete="0" thirdDate="2026-02-16" thirdDate-constraint="0" expand="true"/>
         </task>
-        <task id="21" name="LOT C" color="#000000" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true">
-            <task id="23" name="Tâche C.1" color="#8cb6ce" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
-            <task id="35" name="Tâche C.3" color="#8cb6ce" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-26" thirdDate-constraint="0" expand="true"/>
-            <task id="36" name="Tâche C.4" color="#8cb6ce" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-26" thirdDate-constraint="0" expand="true"/>
+        <task id="21" uid="dda98891326049b3b3063561992b7165" name="LOT C" color="#000000" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true">
+            <depend id="37" type="2" difference="0" hardness="Strong"/>
+            <task id="23" uid="305d839dba3a48b28e0da968260c876c" name="Tâche C.1" color="#8cb6ce" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-13" thirdDate-constraint="0" expand="true"/>
+            <task id="35" uid="ca271c8cafcf4523bbc6f1dc88db851c" name="Tâche C.3" color="#8cb6ce" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-26" thirdDate-constraint="0" expand="true"/>
+            <task id="36" uid="802a217ee2344584b65ab6c8e103a6ad" name="Tâche C.4" color="#8cb6ce" meeting="false" start="2026-03-20" duration="1" complete="100" thirdDate="2026-02-26" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="37" uid="b35319a83e80486898fedc6832ffae9e" name="LOT F" meeting="false" start="2026-05-11" duration="1" complete="0" expand="true">
+            <task id="38" uid="29016e4be7174930a698d81c03c46817" name="Tâche F.1" meeting="false" start="2026-05-11" duration="1" complete="0" expand="true"/>
+            <task id="39" uid="a994daaf6c184bc58998e679b5306739" name="Tâche F.3" meeting="false" start="2026-05-11" duration="1" complete="0" expand="true"/>
+            <task id="40" uid="ae017b77136d4fd899506a192ccf1246" name="Tâche F.4" meeting="false" start="2026-05-11" duration="1" complete="0" expand="true"/>
         </task>
     </tasks>
     <resources>
@@ -89,15 +99,18 @@
         <allocation task-id="7" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="14" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="36" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="40" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="9" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="15" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="20" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="18" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="19" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="23" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="38" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="11" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="17" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="35" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="39" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
     </allocations>
     <vacations/>
     <previous/>
