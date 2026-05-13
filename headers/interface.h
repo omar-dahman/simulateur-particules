@@ -20,6 +20,7 @@
 #define INTERFACE_H
 
 #include "environnement.h"
+#include "camera.h"
 
 /**
  * \brief   Prints a particle's information
@@ -76,8 +77,11 @@ float get_float(void);
  * \param   path            path to the output file as \a char*
  * \param   wp              width  of the image in pixels as \a integer
  * \param   hp              height of the image in pixels as \a integer
+ * \param cam               the camera instance
+ * 
+ * modified for tâche e.4
  */
-void snapshot(env environnement, char *path, int wp, int hp);
+void snapshot(env environnement, char *path, int wp, int hp, Camera* cam);
 
 /**
  * \brief   Generates an animated sequence of PBM images
@@ -90,7 +94,10 @@ void snapshot(env environnement, char *path, int wp, int hp);
  * \param   wp              width  of the images in pixels as \a integer
  * \param   hp              height of the images in pixels as \a integer
  * \param   t               number of iterations as \a integer
+ * \param cam               the camera instance
+ * 
+ * modified for tâche e.4
  */
-void animate(env environnement, char *path, int wp, int hp, int t);
+void animate(env environnement, char *path, int wp, int hp, int t, Camera* cam);
 
 #endif 
