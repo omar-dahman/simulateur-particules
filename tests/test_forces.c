@@ -114,8 +114,8 @@ CU_ErrorCode test_forces_register_suite()
     if (!suite)
         return CU_get_error();
 
-    CU_add_test(suite, "repulsion_entre_deux_particules", test_repulsion_two_particles);
-    CU_add_test(suite, "attraction_particule_attracteur", test_attraction_particle_attractor);
+    CU_add_test(suite, "test_repulsion_two_particles", test_repulsion_two_particles);
+    CU_add_test(suite, "test_attraction_particle_attractor", test_attraction_particle_attractor);
 
     return CUE_SUCCESS;
 }

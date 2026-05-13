@@ -16,8 +16,8 @@
 // each one of these functions is declared in other test functions
 extern CU_ErrorCode test_vector_register_suite();
 extern CU_ErrorCode test_forces_register_suite();
-// extern CU_ErrorCode test_movement_camera_register_suite(void);
-// extern CU_ErrorCode test_vision_camera_register_suite(void);
+extern CU_ErrorCode test_movement_camera_register_suite();
+// extern CU_ErrorCode test_vision_camera_register_suite();
 
 int main(void) {
     if (CU_initialize_registry() != CUE_SUCCESS)
@@ -28,7 +28,7 @@ int main(void) {
 
     test_vector_register_suite();
     test_forces_register_suite();
-    // test_movement_camera_register_suite();
+    test_movement_camera_register_suite();
     // test_vision_camera_register_suite();
 
     CU_basic_set_mode(CU_BRM_VERBOSE);

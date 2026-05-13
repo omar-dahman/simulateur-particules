@@ -177,7 +177,7 @@ void test_vec3_equal()
  */
 CU_ErrorCode test_vector_register_suite()
 {
-    CU_pSuite suite = CU_add_suite("Vector 3D", NULL, NULL);
+    CU_pSuite suite = CU_add_suite("Vector 3D (E.2)", NULL, NULL);
     if (!suite)
         return CU_get_error();
 
