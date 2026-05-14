@@ -1,8 +1,8 @@
 \documentclass[12pt,a4paper]{report}
 
-% ======================================================================================
+% =================================================================================
 % imports des bibliotheques
-% ======================================================================================
+% =================================================================================
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -18,10 +18,11 @@
 \usepackage{amsmath}
 \usepackage{times}
 \usepackage{xcolor}
+\usepackage[none]{hyphenat}   
 
-% ======================================================================================
+% =================================================================================
 % Configurations Generaux
-% ======================================================================================
+% =================================================================================
 
 \geometry{margin=2.5cm}
 
@@ -41,16 +42,16 @@
     captionpos=b                    % Position des légendes en bas
 }
 
-% ======================================================================================
+% =================================================================================
 % Debut du Document
-% ======================================================================================
+% =================================================================================
 
 \begin{document}
-\sloppy
 
-% ======================================================================================
+
+% =================================================================================
 % Premiere page
-% ======================================================================================
+% =================================================================================
 \begin{titlepage}
     \centering
     
@@ -102,23 +103,20 @@
     
 \end{titlepage}
 
+
 % Table des matières
 \tableofcontents
 \newpage
 
-% ======================================================================================
+% =================================================================================
 \chapter{Introduction}
-% ======================================================================================
+% =================================================================================
 
 \section{Objectifs du projet}
 
-Ce projet vise à representer des particules dans un environnement, tout en gerant les reactions
-et les interactions des particules entrer eux memes et avec les bords de notre environnement, ce qui
-ramene à eds calcules eds positions et du vitesse des particules à travers des notions mathématiques
-pour enfin automatisrer les mouvements des particules et les simuler sous forme des images (.pbm)
-ou des representations dans la console.
+Ce projet vise à représenter des particules dans un environnement, tout en gérant les réactions et les interactions des particules entre elles-mêmes et avec les bords de notre environnement, ce qui ramène à des calculs des positions et de la vitesse des particules à travers des notions mathématiques pour enfin automatiser les mouvements des particules et les simuler sous forme d'images (.pbm) ou des représentations dans la console.
 
-\section{Outils \& technologies}
+\section{Outils \& téchnologies}
 
 \begin{itemize}
     \item Language de programmation C
@@ -130,23 +128,211 @@ ou des representations dans la console.
     \item Git
 \end{itemize}
 
-% ======================================================================================
+% =================================================================================
 \chapter{LOT F}
-% ======================================================================================
+% =================================================================================
 
-% ======================================================================================
-\section{Tâche F.1}
-% ======================================================================================
+% ===============================================================================
+\section{Tâche F.1 : Analyse de l'effet tunnel}
+% ===============================================================================
 
-something
+\subsection{Question 1 : Traversée d'un mur}
 
-% ======================================================================================
+\subsubsection{Modélisation du mur}
+
+On considère un mur d'épaisseur non nulle $e > 0$, occupant l'intervalle $[0, e]$ sur l'axe des abscisses. La condition de collision est que la particule se trouve \textbf{à l'intérieur} du mur, c'est-à-dire :
+\[
+0 < x < e
+\]
+
+\subsubsection{Mouvement discret}
+
+La simulation utilise un pas de temps $dt > 0$. La position de la particule à l'instant $t+dt$ est donnée par :
+\[
+x_{t+dt} = x_t + v_x \cdot dt
+\]
+où $v_x$ est la composante horizontale de la vitesse (supposée constante pendant l'itération).
+
+\subsubsection{Configuration critique}
+
+Supposons qu'à l'instant $t$, la particule se trouve juste avant le mur :
+\[
+x_t = -\varepsilon \quad \text{avec} \quad \varepsilon \to 0^+
+\]
+Sa vitesse est dirigée vers le mur : $v_x > 0$.
+
+\subsubsection{Condition de collision}
+
+Pour qu'une collision soit détectée, il faudrait que la nouvelle position se trouve dans l'intervalle $]0, e[$ :
+\[
+0 < x_t + v_x \cdot dt < e
+\]
+
+\subsubsection{Effet tunnel}
+
+Si la particule est très proche du mur ($\varepsilon \approx 0$) et que $v_x \cdot dt > e$, alors :
+\[
+x_{t+dt} \approx v_x \cdot dt > e
+\]
+
+La particule se retrouve de l'autre côté du mur ($x > e$) sans jamais avoir satisfait la condition de collision. Ce phénomène est appelé \textbf{effet tunnel}.
+
+\subsubsection{Condition de traversée}
+
+L'effet tunnel se produit si et seulement si :
+\[
+\boxed{v_x \cdot dt > e}
+\]
+
+\subsubsection{Analyse des paramètres}
+
+\begin{itemize}
+    \item Pour une épaisseur $e$ fixée, plus la vitesse $v_x$ est grande, plus le risque de traversée est élevé.
+    \item Pour une vitesse $v_x$ fixée, plus le pas de temps $dt$ est grand, plus le risque de traversée est élevé.
+    \item À l'inverse, pour garantir l'absence d'effet tunnel, il faut :
+    \[
+    dt \leq \frac{e}{v_x}
+    \]
+\end{itemize}
+
+\subsection{Question 2 : Inégalité de sécurité avec murs épais}
+
+\subsubsection{Définition de la règle des murs épais}
+
+La règle des murs épais est définie comme suit :
+\begin{enumerate}
+    \item La vitesse n'est pas modifiée pendant l'intervalle $[t, t+dt]$.
+    \item À l'instant $t+dt$, on évalue la position $x_{t+dt}$ :
+    \begin{itemize}
+        \item Si $x_{t+dt} \in ]0, e[$ : la particule est dans le mur → on applique une réflexion pour le prochain intervalle $[t+dt, t+2dt]$.
+        \item Sinon : pas de collision.
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Condition de non-traversée}
+
+Pour qu'aucune particule ne traverse le mur sans collision, il faut que le déplacement maximal possible sur une itération soit strictement inférieur à l'épaisseur $e$ du mur.
+
+Soit $v_{max}$ la vitesse maximale que peut atteindre une particule (en pratique, la norme de la vitesse est bornée). La condition nécessaire et suffisante est :
+\[
+v_{max} \cdot dt < e
+\]
+
+\subsubsection{Démonstration}
+
+\begin{itemize}
+    \item Si $v_{max} \cdot dt < e$, alors pour toute particule $|v_x| \leq v_{max}$, on a $|v_x \cdot dt| < e$.
+    \item Même si la particule commence à $x_t = -\varepsilon$ avec $\varepsilon \to 0^+$, on a :
+    \[
+    x_{t+dt} = -\varepsilon + v_x \cdot dt < 0 + e = e
+    \]
+    \item Donc $x_{t+dt} < e$ : la particule ne dépasse jamais l'épaisseur du mur en une itération.
+    \item Si de plus $x_{t+dt} > 0$, elle sera détectée et réfléchie.
+\end{itemize}
+
+\subsubsection{Inégalité stricte}
+
+La condition de sécurité s'écrit donc :
+\[
+\boxed{dt < \frac{e}{v_{max}}}
+\]
+
+\subsubsection{Interprétation physique}
+
+Cette inégalité signifie que le pas de temps $dt$ doit être choisi suffisamment petit par rapport à l'épaisseur $e$ et à la vitesse maximale $v_{max}$. Si elle est respectée, aucune particule ne peut "sauter" par-dessus l'épaisseur du mur en une seule itération.
+
+\subsection{Question 3 : Étude comparative des deux règles}
+
+\subsubsection{Définition des deux règles}
+
+\begin{itemize}
+    \item \textbf{Règle standard} : mur d'épaisseur infinitésimale ($e \to 0^+$), réflexion immédiate dès que $x \geq 0$.
+    \item \textbf{Règle des murs épais} : mur d'épaisseur $e > 0$, collision détectée si $0 < x < e$.
+\end{itemize}
+
+\subsubsection{Configuration d'étude}
+
+On considère une particule de position initiale $x_0 = -\varepsilon$ ($\varepsilon > 0$ très petit) avec une vitesse $v_x > 0$ dirigée vers le mur.
+
+\subsubsection{Évolution selon la règle standard}
+
+La position après une itération est :
+\[
+x_1 = -\varepsilon + v_x \cdot dt
+\]
+
+Deux cas possibles :
+\begin{itemize}
+    \item Si $v_x \cdot dt < \varepsilon$ : $x_1 < 0$, pas de collision.
+    \item Si $v_x \cdot dt \geq \varepsilon$ : $x_1 \geq 0$, collision. La particule est ramenée en $x = 0$ et sa vitesse devient $-v_x$.
+\end{itemize}
+
+\subsubsection{Évolution selon la règle des murs épais}
+
+Même calcul pour la position après une itération :
+\[
+x_1 = -\varepsilon + v_x \cdot dt
+\]
+
+Trois cas possibles :
+\begin{enumerate}
+    \item $x_1 \leq 0$ : pas de collision.
+    \item $0 < x_1 < e$ : collision détectée, vitesse modifiée pour le pas suivant.
+    \item $x_1 \geq e$ : traversée complète du mur sans collision détectée (\textbf{effet tunnel}).
+\end{enumerate}
+
+\subsubsection{Comparaison analytique}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+Condition & Règle standard & Règle des murs épais \\
+\hline
+$v_x \cdot dt < \varepsilon$ & Pas de collision & Pas de collision \\
+$\varepsilon < v_x \cdot dt < e$ & Collision & Collision \\
+$e < v_x \cdot dt$ & Collision & \textbf{Traversée} \\
+\hline
+\end{tabular}
+\caption{Comparaison des deux règles selon la valeur de $v_x \cdot dt$}
+\end{table}
+
+\subsubsection{Cas particulier : $v_x \cdot dt$ très grand}
+
+Si $v_x \cdot dt \gg e$, la particule traverse le mur sans être détectée selon la règle des murs épais, alors qu'elle est réfléchie selon la règle standard.
+
+\subsubsection{Limite $e \to 0$}
+
+Lorsque l'épaisseur du mur tend vers $0$, la règle des murs épais se réduit à la règle standard :
+\[
+\lim_{e \to 0} \left( \text{règle des murs épais} \right) = \text{règle standard}
+\]
+
+\subsubsection{Choix pratique du pas de temps}
+
+Pour éviter l'effet tunnel tout en conservant une simulation réaliste, il faut respecter :
+\[
+\boxed{dt < \frac{e}{v_{max}}}
+\]
+
+où $e$ est l'épaisseur du mur (virtuelle) et $v_{max}$ la vitesse maximale des particules.
+
+\subsubsection{Conclusion de l'étude comparative}
+
+\begin{itemize}
+    \item Les deux règles donnent des résultats identiques lorsque $v_{max} \cdot dt < e$.
+    \item Pour $v_{max} \cdot dt \geq e$, la règle des murs épais peut laisser passer des particules (effet tunnel), contrairement à la règle standard.
+    \item La règle standard est donc plus "sûre" numériquement, mais moins réaliste physiquement.
+    \item La règle des murs épais est plus réaliste mais nécessite de choisir $dt$ suffisamment petit.
+\end{itemize}
+
+% =================================================================================
 \section{Tâche F.3}
-% ======================================================================================
+% =================================================================================
 
-% ======================================================================================
+% =================================================================================
 \section{Tâche F.4}
-% ======================================================================================
+% =================================================================================
 
 \subsection*{1. Expression de la distance au carré $D^2$}
 
