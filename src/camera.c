@@ -13,6 +13,8 @@
 #include "vector.h"
 
 
+#define M_PI 3.14159265358979323846
+
 /* Global up vector: vertical axis is Oz */
 static const vec3 WORLD_UP = {0.0f, 0.0f, 1.0f};
 
