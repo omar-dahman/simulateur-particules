@@ -375,6 +375,7 @@ int main(void)
         {
             move_particules(environnement);
             print_environnement(environnement);
+            camera_update(&cam);
             camera_print(&cam); /* ADDED FOR LOT E - Tâche E.3 */
         }
     }
