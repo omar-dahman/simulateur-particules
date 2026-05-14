@@ -11,6 +11,24 @@
 
 #define FILENAME_BUFFER_LENGTH 256
 
+/**
+ * \file    interface.c
+ *
+ * \brief   User interface and I/O management (Implementation)
+ *
+ * \note MODIFIED FOR LOT E (Tâche E.2):
+ *   - print_particule: now prints z-coordinate and vz.
+ *   - print_environnement: now prints depth d.
+ *   - is_pixel_occupied: uses 3D position but projects onto XY plane for PBM output.
+ *   - snapshot / animate: unchanged in signature.
+ * \note MODIFIED FOR LOT E (Tâche E.4):
+ *   - render_2d : created
+ *   - render_3d : created
+ *   - animate : added camera argument
+ *   - snapshot : added camera argument
+ */
+
+
 void print_particule(particule p) {
     if (p == NULL)
         return;
@@ -67,14 +85,14 @@ float get_float() {
         ret = scanf("%f", &value);
         if (ret != 1) {
             printf("Entrée invalide. Veuillez entrer un float : ");
-            while (getchar() != '\n'); // nettoyage buffer
+            while (getchar() != '\n'); // flush buffer
         }
     } while (ret != 1);
     return value;
 }
 
 
-// All below has been modified for tâche e.5
+// All below has been modified for tâche e.4
 
 short* render_2d(int hd, int wd, env e) {
     short* render = calloc(hd * wd, sizeof (short));

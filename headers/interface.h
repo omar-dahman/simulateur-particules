@@ -79,7 +79,7 @@ float get_float(void);
  * \param   hp              height of the image in pixels as \a integer
  * \param cam               the camera instance
  * 
- * modified for tâche e.5
+ * modified for tâche e.4
  */
 void snapshot(env environnement, char *path, int wp, int hp, Camera* cam);
 
@@ -96,7 +96,7 @@ void snapshot(env environnement, char *path, int wp, int hp, Camera* cam);
  * \param   t               number of iterations as \a integer
  * \param cam               the camera instance
  * 
- * modified for tâche e.5
+ * modified for tâche e.4
  */
 void animate(env environnement, char *path, int wp, int hp, int t, Camera* cam);
 

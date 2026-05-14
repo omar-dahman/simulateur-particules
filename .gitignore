@@ -1,3 +1,6 @@
+# for images
+*.pbm
+
 # -*- mode: gitignore; -*-
 *~
 \#*\#

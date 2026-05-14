@@ -46,6 +46,7 @@ run: $(BINDIR)/$(EXECUTABLE)
 	@./$(BINDIR)/$(EXECUTABLE)
 
 valgrind: $(BINDIR)/$(EXECUTABLE)
+	@echo "Memory check on simulation..."
 	valgrind --leak-check=full --track-origins=yes ./$(BINDIR)/$(EXECUTABLE)
 
 docs:
