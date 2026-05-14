@@ -7,6 +7,12 @@
  *   - struct arguments_s: added field \a d (depth of the environment).
  *   - handle_arguments: asks user for depth d.
  *   - main: passes d to create_environnement.
+ *
+ * \note MODIFIED FOR LOT E (Tâche E.3):
+ *   - struct arguments_s: added fields for camera position, direction and movement choice.
+ *   - handle_camera_arguments: new function that asks the user to configure the camera.
+ *   - setup_camera: new function that applies the chosen movement to the camera.
+ *   - main: camera is now fully configured from user input before the simulation starts.
  */
 
 #include <stdlib.h>
@@ -28,7 +34,7 @@
  * \brief Grouping of simulation options asked to the user.
  * \struct arguments_s
  * \internal
- * \note MODIFIED FOR LOT E (Tâche E.2): added field \a d for depth.
+
  */
 struct arguments_s {
     int   particle_nb;  /**< Number of particles */
@@ -41,6 +47,32 @@ struct arguments_s {
     int   export_img;   /**< 1 = export PBM images, 0 = print to console */
     int   img_w;        /**< Image width  in pixels (0 if console output) */
     int   img_h;        /**< Image height in pixels (0 if console output) */
+
+    /* Camera configuration [ADDED FOR LOT E - Tâche E.3] */
+    int   cam_move;     /**< Camera movement type chosen by the user (0..4) */
+    float cam_px;       /**< Camera initial position x */
+    float cam_py;       /**< Camera initial position y */
+    float cam_pz;       /**< Camera initial position z */
+    float cam_dx;       /**< Camera initial direction x */
+    float cam_dy;       /**< Camera initial direction y */
+    float cam_dz;       /**< Camera initial direction z */
+    /* Parameters for TRANSLATE */
+    float cam_speed;    /**< Speed (used by TRANSLATE and FLY) */
+    /* Parameters for ORBIT */
+    float cam_cx;       /**< Orbit/pendulum center x */
+    float cam_cy;       /**< Orbit/pendulum center y */
+    float cam_cz;       /**< Orbit/pendulum center z */
+    float cam_radius;   /**< Orbit/pendulum radius */
+    float cam_ang_spd;  /**< Orbit angular speed */
+    float cam_elev;     /**< Orbit elevation */
+    /* Parameters for FLY */
+    float cam_tx;       /**< Fly target x */
+    float cam_ty;       /**< Fly target y */
+    float cam_tz;       /**< Fly target z */
+    float cam_turn;     /**< Fly turn rate */
+    /* Parameters for PENDULUM */
+    float cam_ampl;     /**< Pendulum amplitude */
+    float cam_freq;     /**< Pendulum frequency */
 };
 
 /**
@@ -107,9 +139,147 @@ static float ask_for_float(char *message, float min_value, char *error_msg) {
 }
 
 /**
+ * \brief Ask the user for any float (no lower bound constraint).
+ * \param message Prompt to display.
+ * \return The entered float value.
+ */
+static float ask_for_any_float(char *message) {
+    print_message(message);
+    return get_float();
+}
+
+/**
+ * \brief Collect camera configuration from the user.
+ * \details Asks for the initial position, direction, then the desired
+ *          movement type and its associated parameters.
+ * \param options Pointer to the arguments struct to fill.
+ * \note ADDED FOR LOT E (Tâche E.3)
+ */
+static void handle_camera_arguments(arguments options) {
+    print_message("\n--- Configuration de la camera ---\n");
+
+    /* Initial position */
+    print_message("Position initiale de la camera :\n");
+    options->cam_px = ask_for_any_float("  x : ");
+    options->cam_py = ask_for_any_float("  y : ");
+    options->cam_pz = ask_for_any_float("  z : ");
+
+    /* Initial gaze direction */
+    print_message("Direction de visee (vecteur, sera normalise) :\n");
+    options->cam_dx = ask_for_any_float("  dx : ");
+    options->cam_dy = ask_for_any_float("  dy : ");
+    options->cam_dz = ask_for_any_float("  dz : ");
+
+    /* Movement type */
+    print_message("\nType de mouvement de la camera :\n");
+    print_message("  0 - Aucun (camera fixe)\n");
+    print_message("  1 - Translation en ligne droite\n");
+    print_message("  2 - Orbite autour d'un point\n");
+    print_message("  3 - Survol vers une cible (fly)\n");
+    print_message("  4 - Balancement (pendulum)\n");
+    options->cam_move = ask_for_borned_int("Votre choix : ", 0, NULL, 4);
+
+    /* Parameters depending on the chosen movement */
+    switch (options->cam_move) {
+
+        case CAMERA_MOVE_NONE:
+            /* No extra parameters needed */
+            break;
+
+        case CAMERA_MOVE_TRANSLATE:
+            print_message("Direction de deplacement (vecteur, sera normalise) :\n");
+            options->cam_dx  = ask_for_any_float("  dx : ");
+            options->cam_dy  = ask_for_any_float("  dy : ");
+            options->cam_dz  = ask_for_any_float("  dz : ");
+            options->cam_speed = ask_for_float("Vitesse (> 0) : ", 0.0f, NULL);
+            break;
+
+        case CAMERA_MOVE_ORBIT:
+            print_message("Centre de l'orbite :\n");
+            options->cam_cx = ask_for_any_float("  cx : ");
+            options->cam_cy = ask_for_any_float("  cy : ");
+            options->cam_cz = ask_for_any_float("  cz : ");
+            options->cam_radius  = ask_for_float("Rayon de l'orbite (> 0) : ", 0.0f, NULL);
+            options->cam_ang_spd = ask_for_float("Vitesse angulaire en rad/iteration (> 0) : ", 0.0f, NULL);
+            options->cam_elev    = ask_for_any_float("Elevation en radians : ");
+            break;
+
+        case CAMERA_MOVE_FLY:
+            print_message("Point cible :\n");
+            options->cam_tx   = ask_for_any_float("  tx : ");
+            options->cam_ty   = ask_for_any_float("  ty : ");
+            options->cam_tz   = ask_for_any_float("  tz : ");
+            options->cam_speed = ask_for_float("Vitesse (> 0) : ", 0.0f, NULL);
+            options->cam_turn  = ask_for_float("Taux de rotation vers la cible (> 0) : ", 0.0f, NULL);
+            break;
+
+        case CAMERA_MOVE_PENDULUM:
+            print_message("Centre du balancement (pivot) :\n");
+            options->cam_cx   = ask_for_any_float("  cx : ");
+            options->cam_cy   = ask_for_any_float("  cy : ");
+            options->cam_cz   = ask_for_any_float("  cz : ");
+            options->cam_radius = ask_for_float("Distance pivot-camera (> 0) : ", 0.0f, NULL);
+            options->cam_ampl   = ask_for_float("Amplitude en radians (> 0) : ", 0.0f, NULL);
+            options->cam_freq   = ask_for_float("Frequence en rad/iteration (> 0) : ", 0.0f, NULL);
+            break;
+    }
+}
+
+/**
+ * \internal
+ * \brief Creates and configures a Camera from the collected arguments.
+ * \param options Simulation options containing camera parameters.
+ * \param img_w   Screen width  in pixels.
+ * \param img_h   Screen height in pixels.
+ * \return Fully configured Camera.
+ * \note ADDED FOR LOT E (Tâche E.3) 
+ */
+static Camera setup_camera(arguments options, int img_w, int img_h) {
+    vec3   position  = vec3_make(options->cam_px, options->cam_py, options->cam_pz);
+    vec3   direction = vec3_make(options->cam_dx, options->cam_dy, options->cam_dz);
+    Camera cam       = camera_create(position, direction, img_w, img_h);
+
+    switch (options->cam_move) {
+
+        case CAMERA_MOVE_NONE:
+            camera_set_move_none(&cam);
+            break;
+
+        case CAMERA_MOVE_TRANSLATE: {
+            vec3 dir = vec3_make(options->cam_dx, options->cam_dy, options->cam_dz);
+            camera_set_move_translate(&cam, dir, options->cam_speed);
+            break;
+        }
+
+        case CAMERA_MOVE_ORBIT: {
+            vec3 center = vec3_make(options->cam_cx, options->cam_cy, options->cam_cz);
+            camera_set_move_orbit(&cam, center, options->cam_radius,
+                                  options->cam_ang_spd, options->cam_elev);
+            break;
+        }
+
+        case CAMERA_MOVE_FLY: {
+            vec3 target = vec3_make(options->cam_tx, options->cam_ty, options->cam_tz);
+            camera_set_move_fly(&cam, target, options->cam_speed, options->cam_turn);
+            break;
+        }
+
+        case CAMERA_MOVE_PENDULUM: {
+            vec3 pivot = vec3_make(options->cam_cx, options->cam_cy, options->cam_cz);
+            camera_set_move_pendulum(&cam, pivot, options->cam_radius,
+                                     options->cam_ampl, options->cam_freq);
+            break;
+        }
+    }
+
+    return cam;
+}
+
+/**
  * \brief Collect all simulation parameters from the user via the console.
  * \return Pointer to a populated arguments struct, or NULL on allocation failure.
  * \note MODIFIED FOR LOT E (Tâche E.2): now asks for depth \a d.
+ * \note MODIFIED FOR LOT E (Tâche E.3): now asks for camera configuration.
  */
 static arguments handle_arguments(void) {
     arguments options = malloc(sizeof(struct arguments_s));
@@ -134,6 +304,9 @@ static arguments handle_arguments(void) {
         options->img_h = ask_for_int("Entrer la hauteur de l'image (pixels) : ", 1, NULL);
     }
 
+    /* ADDED FOR LOT E (Tâche E.3): camera configuration */
+    handle_camera_arguments(options);
+
     return options;
 }
 
@@ -144,6 +317,7 @@ static arguments handle_arguments(void) {
  *   - Prints environment state to the console for each iteration.
  *
  * \note MODIFIED FOR LOT E (Tâche E.2): passes options->d to create_environnement.
+ * \note MODIFIED FOR LOT E (Tâche E.3): camera is configured from user input.
  */
 int main(void) {
     arguments options = handle_arguments();
@@ -162,17 +336,14 @@ int main(void) {
         options->iteration_t
     );
 
-    // modified for tâche E.4 lot e
-    vec3 p = vec3_make(0.0, 0.0, 0.0);
-    vec3 v = vec3_make(1.0, 0.0, 0.0);
-    Camera cam = camera_create(p,v,options->img_w, options->img_h);
-    camera_set_move_orbit(&cam, p, 2.0, 0.5, 4.0);
-
     if (environnement == NULL) {
         print_message("Echec de la creation de l'environnement\n");
         free(options);
         return EXIT_FAILURE;
     }
+
+    /* ADDED FOR LOT E (Tâche E.3): create and configure camera from user input */
+    Camera cam = setup_camera(options, options->img_w, options->img_h);
 
     if (options->export_img) {
         animate(environnement, OUTPUT_DIRECTORY, options->img_w, options->img_h, options->iterations, &cam);
@@ -180,7 +351,8 @@ int main(void) {
         for (int i = 0; i < options->iterations; i++) {
             move_particules(environnement);
             print_environnement(environnement);
-            camera_print(&cam); // added for e.4
+            camera_update(&cam);   /* ADDED FOR LOT E (Tâche E.3) */
+            camera_print(&cam);    /* ADDED FOR LOT E (Tâche E.3) */
         }
     }
 
