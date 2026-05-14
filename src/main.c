@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include "environnement.h"
 #include "interface.h"
+#include "camera.h"
+#include "vector.h"
 
 /**
  * \brief Output directory for PBM images.
@@ -160,6 +162,12 @@ int main(void) {
         options->iteration_t
     );
 
+    // modified for tâche E.5 lot e
+    vec3 p = vec3_make(0.0, 0.0, 0.0);
+    vec3 v = vec3_make(1.0, 0.0, 0.0);
+    Camera cam = camera_create(p,v,options->img_w, options->img_h);
+    camera_set_move_orbit(&cam, p, 2.0, 0.5, 4.0);
+
     if (environnement == NULL) {
         print_message("Echec de la creation de l'environnement\n");
         free(options);
@@ -167,11 +175,12 @@ int main(void) {
     }
 
     if (options->export_img) {
-        animate(environnement, OUTPUT_DIRECTORY, options->img_w, options->img_h, options->iterations);
+        animate(environnement, OUTPUT_DIRECTORY, options->img_w, options->img_h, options->iterations, &cam);
     } else {
         for (int i = 0; i < options->iterations; i++) {
             move_particules(environnement);
             print_environnement(environnement);
+            camera_print(&cam); // added for e.5
         }
     }
 
