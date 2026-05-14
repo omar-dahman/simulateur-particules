@@ -18,7 +18,10 @@
 \usepackage{amsmath}
 \usepackage{times}
 \usepackage{xcolor}
-\usepackage[none]{hyphenat}   
+\usepackage[none]{hyphenat}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\pgfplotsset{compat=1.18}   
 
 % =================================================================================
 % Configurations Generaux
@@ -327,8 +330,273 @@ où $e$ est l'épaisseur du mur (virtuelle) et $v_{max}$ la vitesse maximale des
 \end{itemize}
 
 % =================================================================================
-\section{Tâche F.3}
+\section{Tâche F.3 : Loi Limite et Statistique}
 % =================================================================================
+
+On considère toujours le modèle de la tâche C.3 : une marche aléatoire en deux dimensions
+où, à chaque pas, la particule se déplace d'une unité dans une direction $\theta_k$ tirée
+uniformément sur $[0, 2\pi]$. La position après $n$ pas est donc :
+\[
+    p_n = \sum_{k=1}^{n} \begin{pmatrix} \cos\theta_k \\ \sin\theta_k \end{pmatrix}
+\]
+
+% ---------------------------------------------------------------------------------
+\subsection{Question 1 : Convergence en loi par le TCL vectoriel}
+% ---------------------------------------------------------------------------------
+
+\subsubsection{Application du Théorème Central Limite vectoriel}
+
+Notons $X_k = \cos\theta_k$ et $Y_k = \sin\theta_k$. Puisque $\theta_k \sim \mathcal{U}([0, 2\pi])$ :
+
+\begin{itemize}
+    \item Espérances : $\mathbb{E}[X_k] = 0$ et $\mathbb{E}[Y_k] = 0$ par symétrie de la distribution.
+    \item Variances : $\mathbb{E}[X_k^2] = \mathbb{E}[\cos^2\theta_k] = \dfrac{1}{2}$ et de même $\mathbb{E}[Y_k^2] = \dfrac{1}{2}$.
+    \item Covariance : $\mathbb{E}[X_k Y_k] = \mathbb{E}[\cos\theta_k \sin\theta_k] = \dfrac{1}{2}\mathbb{E}[\sin 2\theta_k] = 0$.
+\end{itemize}
+
+La matrice de covariance du vecteur $(X_k, Y_k)^\top$ est donc :
+\[
+    \Sigma = \begin{pmatrix} \frac{1}{2} & 0 \\ 0 & \frac{1}{2} \end{pmatrix} = \frac{1}{2}\, I_2
+\]
+
+Par le \textbf{Théorème Central Limite vectoriel}, la somme normalisée converge en loi :
+\[
+    \frac{p_n}{\sqrt{n}} \xrightarrow[n \to +\infty]{\mathcal{L}} \mathcal{N}\!\left(0,\, \frac{1}{2} I_2\right)
+\]
+
+\subsubsection{Loi du module — convergence vers la loi de Rayleigh}
+
+Soit $(X, Y)^\top \sim \mathcal{N}(0, \frac{1}{2}I_2)$, i.e.\ $X$ et $Y$ sont des gaussiennes
+indépendantes de variance $\sigma^2 = \frac{1}{2}$. Le module $R = \sqrt{X^2 + Y^2}$ suit alors
+une \textbf{loi de Rayleigh} de paramètre $\sigma = \frac{1}{\sqrt{2}}$, dont la densité est :
+\[
+    f_R(r) = \frac{r}{\sigma^2}\,e^{-r^2/(2\sigma^2)} = 2r\,e^{-r^2}, \quad r \geq 0
+\]
+
+Par le théorème de continuous mapping, on conclut :
+\[
+    \fcolorbox{red}{white}{$\displaystyle
+        \frac{\|p_n\|}{\sqrt{n}} \xrightarrow[n \to +\infty]{\mathcal{L}} \mathrm{Rayleigh}\!\left(\frac{1}{\sqrt{2}}\right)
+    $}
+\]
+
+En d'autres termes, pour $n$ grand, $\|p_n\|$ se comporte approximativement comme une loi de
+Rayleigh de paramètre effectif $\sigma_\text{eff} = \sqrt{n/2}$.
+
+% ---------------------------------------------------------------------------------
+\subsection{Question 2 : Intervalle de confiance à 95\% pour la distance moyenne}
+% ---------------------------------------------------------------------------------
+
+\subsubsection{Cadre statistique}
+
+On effectue $M$ simulations indépendantes. Pour chaque simulation $i$, on obtient une distance
+finale $D_i = \|p_n^{(i)}\|$. On veut estimer la distance moyenne $\mu_D = \mathbb{E}[\|p_n\|]$.
+
+\subsubsection{Expression de l'intervalle de confiance}
+
+Les $D_i$ sont i.i.d.\ de moyenne $\mu_D$ et de variance $\sigma_D^2$ inconnue. On pose :
+\[
+    \bar{D}_M = \frac{1}{M}\sum_{i=1}^M D_i, \qquad
+    s_M^2 = \frac{1}{M-1}\sum_{i=1}^M \left(D_i - \bar{D}_M\right)^2
+\]
+
+Par le TCL, pour $M$ grand :
+\[
+    \frac{\bar{D}_M - \mu_D}{s_M / \sqrt{M}} \approx \mathcal{N}(0,1)
+\]
+
+L'intervalle de confiance à 95\% pour $\mu_D$ est donc :
+
+\[
+    \fcolorbox{red}{white}{$\displaystyle
+        \text{IC}_{95\%} = \left[\bar{D}_M - 1{,}96\,\frac{s_M}{\sqrt{M}},\quad
+                                  \bar{D}_M + 1{,}96\,\frac{s_M}{\sqrt{M}}\right]
+    $}
+\]
+
+\subsubsection{Vérification par la loi de Rayleigh}
+
+L'espérance théorique de la loi de Rayleigh de paramètre $\sigma_\text{eff} = \sqrt{n/2}$ est :
+\[
+    \mu_D^\text{théo} = \sigma_\text{eff}\sqrt{\frac{\pi}{2}} = \sqrt{\frac{n}{2}} \cdot \sqrt{\frac{\pi}{2}} = \frac{\sqrt{n\pi}}{2}
+\]
+Pour $n = 100$ : $\mu_D^\text{théo} = \frac{10\sqrt{\pi}}{2} \approx 8{,}862$.
+
+% ---------------------------------------------------------------------------------
+\subsection{Expérimentation : simulation de $M=1000$ marches de $n=100$ pas}
+% ---------------------------------------------------------------------------------
+
+Les questions 3, 4 et 5 sont traitées conjointement via le script Python ci-dessous.
+Il simule $M = 1000$ marches de $n = 100$ pas, trace l'histogramme des distances finales
+et superpose la densité théorique de Rayleigh.
+
+\begin{lstlisting}[language=Python, caption=Simulation et validation graphique — Rayleigh]
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(42)
+
+M = 1000   # nombre de marches (simulations)
+n = 100    # nombre de pas par marche
+
+# =========================================================
+# QUESTION 3 : Simuler M=1000 marches aleatoires de n=100 pas
+# Chaque pas est un vecteur unitaire dans une direction aleatoire
+# =========================================================
+angles = np.random.uniform(0, 2 * np.pi, (M, n))
+steps_x = np.cos(angles)
+steps_y = np.sin(angles)
+
+# Position finale de chaque marche (somme des pas)
+pos_x = np.sum(steps_x, axis=1)   # shape (M,)
+pos_y = np.sum(steps_y, axis=1)   # shape (M,)
+
+# =========================================================
+# QUESTION 4 : Distances finales a l'origine
+# =========================================================
+distances = np.sqrt(pos_x**2 + pos_y**2)   # ||p_100|| pour chaque marche
+
+# Intervalle de confiance 95% pour la moyenne (Question 2)
+D_bar = np.mean(distances)
+s     = np.std(distances, ddof=1)
+IC_low  = D_bar - 1.96 * s / np.sqrt(M)
+IC_high = D_bar + 1.96 * s / np.sqrt(M)
+
+print(f"Moyenne empirique        : {D_bar:.4f}")
+print(f"Ecart-type empirique     : {s:.4f}")
+print(f"IC 95%                   : [{IC_low:.4f}, {IC_high:.4f}]")
+print(f"Moyenne theorique        : {np.sqrt(n * np.pi) / 2:.4f}")
+
+# =========================================================
+# QUESTION 5 : Superposer la densite de Rayleigh theorique
+# sigma_eff = sqrt(n/2) car ||p_n|| ~ Rayleigh(sqrt(n/2))
+# =========================================================
+sigma_eff = np.sqrt(n / 2.0)   # = sqrt(50) pour n=100
+
+fig, ax = plt.subplots(figsize=(9, 5))
+
+# Histogramme normalise (densite empirique)
+ax.hist(distances, bins=40, density=True, color='steelblue', alpha=0.65,
+        edgecolor='white', linewidth=0.4,
+        label='Histogramme empirique ($M=1000$, $n=100$)')
+
+# Densite de Rayleigh theorique
+r_vals = np.linspace(0, distances.max() + 20, 500)
+f_rayleigh = (r_vals / sigma_eff**2) * np.exp(-r_vals**2 / (2 * sigma_eff**2))
+ax.plot(r_vals, f_rayleigh, 'r-', linewidth=2.2,
+        label=r'Rayleigh theorique ($\sigma = \sqrt{50}$)')
+
+# Moyennes
+ax.axvline(D_bar, color='navy', linestyle='--', linewidth=1.4,
+           label=f'Moyenne empirique = {D_bar:.2f}')
+ax.axvline(np.sqrt(n * np.pi) / 2, color='darkred', linestyle=':', linewidth=1.4,
+           label=f'Moyenne theorique = {np.sqrt(n * np.pi) / 2:.2f}')
+
+ax.set_xlabel('Distance finale a l\'origine $\\|p_{100}\\|$')
+ax.set_ylabel('Densite de probabilite')
+ax.set_title('Validation du modele de Rayleigh — Marche aleatoire 2D')
+ax.legend()
+ax.grid(True, linestyle=':', alpha=0.5)
+plt.tight_layout()
+plt.savefig("rayleigh_f3.png", dpi=200, bbox_inches='tight')
+\end{lstlisting}
+
+\subsubsection{Résultats numériques}
+
+L'exécution du script donne :
+\begin{itemize}
+    \item Moyenne empirique : $\bar{D}_{1000} \approx 8{,}861$
+    \item Écart-type empirique : $s_{1000} \approx 4{,}548$
+    \item IC 95\% : $[8{,}579 \;;\; 9{,}143]$
+    \item Moyenne théorique (Rayleigh) : $\frac{10\sqrt{\pi}}{2} \approx 8{,}862$
+\end{itemize}
+
+La valeur théorique est contenue dans l'intervalle de confiance, ce qui confirme la validité du modèle.
+
+\subsubsection{Analyse de la figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=13cm, height=7cm,
+    xlabel={Distance finale à l'origine $\|p_{100}\|$},
+    ylabel={Densité de probabilité},
+    title={Validation du modèle de Rayleigh — Marche aléatoire 2D ($M=1000$, $n=100$)},
+    legend pos=north east,
+    legend style={font=\small},
+    grid=both,
+    grid style={dotted, gray!50},
+    xmin=0, xmax=30,
+    ymin=0,
+    xtick distance=5,
+]
+
+%% Histogramme empirique (densité) — données générées par simulation Python (seed=42)
+\addplot[
+    ybar, bar width=0.713,
+    fill=steelblue!65, draw=white, fill opacity=0.85,
+] coordinates {
+(0.604,0.01122) (1.316,0.02105) (2.029,0.04069) (2.742,0.04771)
+(3.454,0.06875) (4.167,0.05472) (4.880,0.07857) (5.592,0.10102)
+(6.305,0.08419) (7.018,0.08980) (7.731,0.08840) (8.443,0.07998)
+(9.156,0.05753) (9.869,0.09962) (10.581,0.05612) (11.294,0.05472)
+(12.007,0.05893) (12.719,0.05051) (13.432,0.04209) (14.145,0.04630)
+(14.858,0.03227) (15.570,0.02385) (16.283,0.02947) (16.996,0.02526)
+(17.708,0.00982) (18.421,0.01543) (19.134,0.00421) (19.846,0.00702)
+(20.559,0.00982) (21.272,0.00561) (21.985,0.00281) (22.697,0.00281)
+};
+\addlegendentry{Histogramme empirique}
+
+%% Densité de Rayleigh théorique : f(r) = r/sigma^2 * exp(-r^2 / 2*sigma^2), sigma=sqrt(50)
+\addplot[
+    red, thick, smooth,
+] coordinates {
+(0.100,0.002000) (0.605,0.012057) (1.110,0.021931) (1.615,0.031472)
+(2.120,0.040541) (2.625,0.049009) (3.130,0.056764) (3.635,0.063707)
+(4.141,0.069764) (4.646,0.074876) (5.151,0.079009) (5.656,0.082148)
+(6.161,0.084300) (6.666,0.085490) (7.171,0.085759) (7.676,0.085168)
+(8.181,0.083785) (8.686,0.081693) (9.191,0.078981) (9.696,0.075740)
+(10.201,0.072066) (10.706,0.068055) (11.211,0.063797) (11.716,0.059381)
+(12.222,0.054887) (12.727,0.050389) (13.232,0.045951) (13.737,0.041630)
+(14.242,0.037473) (14.747,0.033518) (15.252,0.029792) (15.757,0.026316)
+(16.262,0.023105) (16.767,0.020162) (17.272,0.017489) (17.777,0.015080)
+(18.282,0.012926) (18.787,0.011015) (19.292,0.009332) (19.797,0.007861)
+(20.303,0.006583) (20.808,0.005482) (21.313,0.004539) (21.818,0.003737)
+(22.323,0.003060) (22.828,0.002491) (23.333,0.002016) (23.838,0.001623)
+(24.343,0.001300) (24.848,0.001035) (25.353,0.000819) (26.363,0.000505)
+};
+\addlegendentry{Rayleigh théorique $(\sigma{=}\sqrt{50})$}
+
+%% Moyenne empirique
+\addplot[navy, dashed, thick] coordinates {(8.861,0) (8.861,0.092)};
+\addlegendentry{Moyenne empirique $= 8{,}86$}
+
+%% Moyenne théorique
+\addplot[red!70!black, dotted, thick] coordinates {(8.862,0) (8.862,0.092)};
+\addlegendentry{Moyenne théorique $= 8{,}86$}
+
+\end{axis}
+\end{tikzpicture}
+\caption{Histogramme des distances finales $\|p_{100}\|$ sur $M=1000$ marches
+         et densité de Rayleigh théorique superposée ($\sigma_\mathrm{eff} = \sqrt{50}$)}
+\label{fig:rayleigh_f3}
+\end{figure}
+
+La figure \ref{fig:rayleigh_f3} présente les résultats de la simulation. On observe une superposition
+quasi parfaite entre :
+
+\begin{itemize}
+    \item L'\textbf{histogramme empirique} (barres bleues) des distances $\|p_{100}\|$ sur les
+          1000 marches simulées, qui forme une courbe en cloche asymétrique caractéristique
+          de la loi de Rayleigh.
+    \item La \textbf{courbe de densité théorique} (ligne rouge) correspondant à la loi
+          $\mathrm{Rayleigh}(\sqrt{50})$ prédite par le TCL vectoriel.
+\end{itemize}
+
+Les deux moyennes (empirique en trait plein bleu foncé, théorique en pointillés rouge foncé)
+sont quasiment confondues à $8{,}86$, validant expérimentalement que $\|p_n\|/\sqrt{n}$ converge
+bien vers la loi de Rayleigh de paramètre $1/\sqrt{2}$.
 
 % =================================================================================
 \section{Tâche F.4}
