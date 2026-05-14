@@ -22,13 +22,15 @@ all: build run
 
 clean:
 	@rm -rf $(OBJDIR)/*
+	@rm -rf $(IMAGESDIR)/*
 	@find docs/ -mindepth 1 ! -name 'Doxyfile' -exec rm -rf {} +
+	@echo "Cleaning done"
 
 mrproper:
 	@rm -rf $(BINDIR)/*
 
 build:
-	@echo "Compiling..."
+	@echo "Compiling simulation..."
 	@make $(BINDIR)/$(EXECUTABLE)
 
 run: $(BINDIR)/$(EXECUTABLE)
@@ -36,6 +38,7 @@ run: $(BINDIR)/$(EXECUTABLE)
 	@./$(BINDIR)/$(EXECUTABLE)
 
 valgrind: $(BINDIR)/$(EXECUTABLE)
+	@echo "Memory check on simulation..."
 	valgrind --leak-check=full --track-origins=yes ./$(BINDIR)/$(EXECUTABLE)
 
 docs:
