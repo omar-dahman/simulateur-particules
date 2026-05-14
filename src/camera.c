@@ -306,15 +306,94 @@ void camera_rotate_pitch(Camera *cam, float angle) {
     normalize_dir(cam);
 }
 
-void camera_print(const Camera *cam) {
+void camera_print(const Camera *cam)
+{
     static const char *move_names[] = {
-        "NONE", "TRANSLATE", "ORBIT", "FLY", "PENDULUM"
-    };
-    printf("Camera :\n");
-    printf("  position  : (%f, %f, %f)\n",
+        "NONE", "TRANSLATE", "ORBIT", "FLY", "PENDULUM"};
+
+    printf("\n╔══════════════════════════════════════════════════════════════════╗\n");
+    printf("║                         CAMERA STATE                             ║\n");
+    printf("╚══════════════════════════════════════════════════════════════════╝\n");
+
+    /* Position */
+    printf("📍 Position     : (%.3f, %.3f, %.3f)\n",
            cam->position.x, cam->position.y, cam->position.z);
-    printf("  direction : (%f, %f, %f)\n",
-           cam->direction.x, cam->direction.y, cam->direction.z);
-    printf("  screen    : %d x %d pixels\n", cam->width, cam->height);
-    printf("  movement  : %s\n", move_names[cam->move_type]);
+
+    /* Direction */
+    float norm = vec3_norm(cam->direction);
+    printf("🎯 Direction   : (%.3f, %.3f, %.3f)  [norme = %.6f]",
+           cam->direction.x, cam->direction.y, cam->direction.z, norm);
+    if (fabs(norm - 1.0f) > 1e-5f)
+    {
+        printf(" ⚠️  ERREUR : vecteur non unitaire !");
+    }
+    printf("\n");
+
+    /* Angle par rapport à l'axe X (pour le debug) */
+    float angle_x = acosf(fabs(cam->direction.x)) * 180.0f / M_PI;
+    float angle_y = acosf(fabs(cam->direction.y)) * 180.0f / M_PI;
+    float angle_z = acosf(fabs(cam->direction.z)) * 180.0f / M_PI;
+    printf("📐 Angles      : X=%.1f° , Y=%.1f° , Z=%.1f°\n", angle_x, angle_y, angle_z);
+
+    /* Écran */
+    printf("🖥️  Écran       : %d x %d pixels\n", cam->width, cam->height);
+
+    /* Type de mouvement */
+    printf("🎬 Mouvement   : %s", move_names[cam->move_type]);
+
+    /* Paramètres spécifiques selon le type de mouvement */
+    switch (cam->move_type)
+    {
+    case CAMERA_MOVE_TRANSLATE:
+        printf("\n   └─ Direction : (%.3f, %.3f, %.3f), Vitesse : %.3f",
+               cam->params.translate.direction.x,
+               cam->params.translate.direction.y,
+               cam->params.translate.direction.z,
+               cam->params.translate.speed);
+        break;
+
+    case CAMERA_MOVE_ORBIT:
+        printf("\n   └─ Centre : (%.3f, %.3f, %.3f), Rayon : %.3f",
+               cam->params.orbit.center.x,
+               cam->params.orbit.center.y,
+               cam->params.orbit.center.z,
+               cam->params.orbit.radius);
+        printf("\n      └─ Vitesse angulaire : %.3f rad/it, Élévation : %.3f rad, Angle courant : %.3f rad",
+               cam->params.orbit.angular_speed,
+               cam->params.orbit.elevation,
+               cam->params.orbit.angle);
+        break;
+
+    case CAMERA_MOVE_FLY:
+        printf("\n   └─ Cible : (%.3f, %.3f, %.3f), Vitesse : %.3f, Taux rotation : %.3f",
+               cam->params.fly.target.x,
+               cam->params.fly.target.y,
+               cam->params.fly.target.z,
+               cam->params.fly.speed,
+               cam->params.fly.turn_rate);
+        break;
+
+    case CAMERA_MOVE_PENDULUM:
+        printf("\n   └─ Pivot : (%.3f, %.3f, %.3f), Rayon : %.3f",
+               cam->params.pendulum.pivot.x,
+               cam->params.pendulum.pivot.y,
+               cam->params.pendulum.pivot.z,
+               cam->params.pendulum.radius);
+        printf("\n      └─ Amplitude : %.3f rad, Fréquence : %.3f rad/it, Phase : %.3f rad",
+               cam->params.pendulum.amplitude,
+               cam->params.pendulum.frequency,
+               cam->params.pendulum.phase);
+        break;
+
+    default:
+        break;
+    }
+    printf("\n");
+
+    /* Calcul de la distance à l'origine (pour debug) */
+    float dist_to_origin = vec3_norm(cam->position);
+    printf("📏 Distance origine : %.3f\n", dist_to_origin);
+
+    /* Ligne de séparation */
+    printf("╚══════════════════════════════════════════════════════════════════╝\n\n");
 }
