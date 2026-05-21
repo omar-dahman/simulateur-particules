@@ -1,5 +1,17 @@
 #include "optimization.h"
 
+// Tâche G.2 : début des modifications
+#include "environnement.h"
+#include "particules.h"
+#include "math.h"
+
+void set_particule(env e, int i, float x, float y, float vx, float vy) {
+    particule p = get_particule(e, i);
+    set_position(p, x, y);
+    set_speed(p, vx, vy);
+}
+// Tâche G.2 : fin des modifications
+
 // converts the distance along the losange to the real x,y
 // coordinates. returns n € {0,1,2,3} representing in which
 // side of the rectangle the particle is in.
