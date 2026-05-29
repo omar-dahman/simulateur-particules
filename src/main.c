@@ -4,12 +4,12 @@
  * \brief Entrypoint — handles options, launches simulation and outputs results.
  *
  * \note MODIFIED FOR LOT E (Tâche E.2):
- *   - struct arguments_s: added field \a d (depth of the environment).
+ *   - struct options_s: added field \a d (depth of the environment).
  *   - handle_arguments: asks user for depth d.
  *   - main: passes d to create_environnement.
  *
  * \note MODIFIED FOR LOT E (Tâche E.3):
- *   - struct arguments_s: added camera position, direction and movement fields.
+ *   - struct options_s: added camera position, direction and movement fields.
  *   - ask_for_any_float: new helper for floats with no lower bound.
  *   - ask_camera_parameters: new function to collect camera configuration.
  *   - create_camera_from_options: new function to build a Camera from options.
@@ -22,6 +22,7 @@
 #include "interface.h"
 #include "camera.h"
 #include "vector.h"
+#include "options.h"
 
 /**
  * \brief Output directory for PBM images.
@@ -31,55 +32,6 @@
 
 /** \internal Default error message used when none is provided. */
 #define DEFAULT_ERROR_MESSAGE "Erreur : reessayer"
-
-/**
- * \brief Grouping of simulation options asked to the user.
- * \struct arguments_s
- * \internal
- * \note MODIFIED FOR LOT E (Tâche E.2): added field \a d for depth.
- * \note MODIFIED FOR LOT E (Tâche E.3): added camera position, direction and
- *       movement parameters (cam_x … pend_frequency).
- */
-struct arguments_s
-{
-    int particle_nb;   /**< Number of particles */
-    int w;             /**< Width  of the environment (x-axis) */
-    int h;             /**< Height of the environment (y-axis) */
-    int d;             /**< Depth  of the environment (z-axis) [ADDED FOR LOT E - Tâche E.2] */
-    float radius;      /**< Interaction radius */
-    int iterations;    /**< Number of simulation iterations */
-    float iteration_t; /**< Duration of one iteration */
-    int export_img;    /**< 1 = export PBM images, 0 = print to console */
-    int img_w;         /**< Image width  in pixels (0 if console output) */
-    int img_h;         /**< Image height in pixels (0 if console output) */
-
-    /* ADDED FOR LOT E (Tâche E.3): camera parameters */
-    float cam_x, cam_y, cam_z;               /**< Camera position in 3D space     */
-    float cam_dir_x, cam_dir_y, cam_dir_z;   /**< Camera gaze direction (any unit) */
-    int   camera_move_type;                  /**< Movement type (0-4)              */
-
-    /* Translation movement parameters [ADDED FOR LOT E - Tâche E.3] */
-    float trans_dir_x, trans_dir_y, trans_dir_z;
-    float trans_speed;
-
-    /* Orbit movement parameters [ADDED FOR LOT E - Tâche E.3] */
-    float orbit_center_x, orbit_center_y, orbit_center_z;
-    float orbit_radius, orbit_angular_speed, orbit_elevation;
-
-    /* Fly movement parameters [ADDED FOR LOT E - Tâche E.3] */
-    float fly_target_x, fly_target_y, fly_target_z;
-    float fly_speed, fly_turn_rate;
-
-    /* Pendulum movement parameters [ADDED FOR LOT E - Tâche E.3] */
-    float pend_pivot_x, pend_pivot_y, pend_pivot_z;
-    float pend_radius, pend_amplitude, pend_frequency;
-};
-
-/**
- * \typedef arguments
- * \see arguments_s
- */
-typedef struct arguments_s *arguments;
 
 /**
  * \internal
@@ -176,7 +128,7 @@ static float ask_for_any_float(char *message)
  *
  * \note ADDED FOR LOT E (Tâche E.3): entire function is new.
  */
-static void ask_camera_parameters(arguments options)
+static void ask_camera_parameters(options options)
 {
     print_message("\n--- Configuration de la camera ---\n");
 
@@ -236,12 +188,12 @@ static void ask_camera_parameters(arguments options)
 /**
  * \internal
  * \brief Builds a Camera from the parameters stored in \a options.
- * \param options Populated arguments struct.
+ * \param options Populated options struct.
  * \return Configured Camera value.
  *
  * \note ADDED FOR LOT E (Tâche E.3): entire function is new.
  */
-static Camera create_camera_from_options(arguments options)
+static Camera create_camera_from_options(options options)
 {
     vec3   pos = vec3_make(options->cam_x, options->cam_y, options->cam_z);
     vec3   dir = vec3_make(options->cam_dir_x, options->cam_dir_y, options->cam_dir_z);
@@ -292,13 +244,13 @@ static Camera create_camera_from_options(arguments options)
 
 /**
  * \brief Collect all simulation parameters from the user via the console.
- * \return Pointer to a populated arguments struct, or NULL on allocation failure.
+ * \return Pointer to a populated options struct, or NULL on allocation failure.
  * \note MODIFIED FOR LOT E (Tâche E.2): now asks for depth \a d.
  * \note MODIFIED FOR LOT E (Tâche E.3): now calls ask_camera_parameters().
  */
-static arguments handle_arguments(void)
+static options handle_arguments(void)
 {
-    arguments options = malloc(sizeof(struct arguments_s));
+    options options = malloc(sizeof(struct options_s));
     if (options == NULL)
         return NULL;
 
@@ -339,7 +291,7 @@ static arguments handle_arguments(void)
  */
 int main(void)
 {
-    arguments options = handle_arguments();
+    options options = handle_arguments();
     if (options == NULL)
     {
         print_message("Erreur d'allocation memoire\n");
