@@ -29,20 +29,18 @@ AppData *app_create(GtkApplication *gtk_app){
     // buttons
 	GtkWidget *actions_group = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
     data->btn_next_iter = gtk_button_new_with_label("Next iteration");
-	data->btn_reset = gtk_button_new_with_label("Reset envrionnement");
+	data->btn_create = gtk_button_new_with_label("Create envrionnement");
 	gtk_box_pack_start(GTK_BOX(actions_group),data->btn_next_iter,FALSE,FALSE,5);
-	gtk_box_pack_start(GTK_BOX(actions_group),data->btn_reset,FALSE,FALSE,5);
+	gtk_box_pack_start(GTK_BOX(actions_group),data->btn_create,FALSE,FALSE,5);
 	gtk_box_pack_start(GTK_BOX(data->control_bar), actions_group, FALSE, FALSE, 10);
 
 	// param fields
 	GtkWidget *sim_group = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	GtkWidget *iter_group = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-	GtkWidget *img_group  = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	GtkWidget *cam_group  = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 
 	gtk_box_pack_start(GTK_BOX(data->control_bar), sim_group, FALSE, FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(data->control_bar), iter_group, FALSE, FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(data->control_bar), img_group, FALSE, FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(data->control_bar), cam_group, FALSE, FALSE, 10);
 
 	GtkWidget *p_nb_box = create_label_entry("Nombre particules:",&data->entry_particle_nb);
@@ -52,8 +50,6 @@ AppData *app_create(GtkApplication *gtk_app){
 	GtkWidget *r_box = create_label_entry("Rayon iteration:",&data->entry_r);
 	GtkWidget *nb_inter_box = create_label_entry("Nombre iteration:",&data->entry_iter_nb);
 	GtkWidget *tps_inter_box = create_label_entry("Durée iteration:",&data->entry_iter_t);
-	GtkWidget *w_i_box = create_label_entry("Largeur image:",&data->entry_w_img);
-	GtkWidget *h_i_box = create_label_entry("Hauteur image:",&data->entry_h_img);
 	GtkWidget *x_cam_box = create_label_entry("X camera:",&data->entry_cam_x);
 	GtkWidget *y_cam_box = create_label_entry("Y camera:",&data->entry_cam_y);
 	GtkWidget *z_cam_box = create_label_entry("Z camera:",&data->entry_cam_z);
@@ -68,8 +64,6 @@ AppData *app_create(GtkApplication *gtk_app){
 	gtk_box_pack_start(GTK_BOX(iter_group), r_box, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX(iter_group), nb_inter_box, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX(iter_group), tps_inter_box, FALSE, FALSE, 2);
-	gtk_box_pack_start(GTK_BOX(img_group), w_i_box, FALSE, FALSE, 2);
-	gtk_box_pack_start(GTK_BOX(img_group), h_i_box, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX(cam_group), x_cam_box, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX(cam_group), y_cam_box, FALSE, FALSE, 2);
 	gtk_box_pack_start(GTK_BOX(cam_group), z_cam_box, FALSE, FALSE, 2);
@@ -86,7 +80,7 @@ AppData *app_create(GtkApplication *gtk_app){
 
 	//controller handling
     g_signal_connect(data->btn_next_iter,"clicked",G_CALLBACK(on_next),data);
-	g_signal_connect(data->btn_reset,"clicked",G_CALLBACK(on_reset),data);
+	g_signal_connect(data->btn_create,"clicked",G_CALLBACK(on_create),data);
     
     gtk_widget_show_all(data->window);
 
