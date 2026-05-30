@@ -4,26 +4,28 @@ BINDIR = bin
 HEADERSDIR = headers
 IMAGESDIR = output
 
-CFLAGS = -Wall -Wextra -std=c99 -I$(HEADERSDIR) $(GTK_FLAGS)
-OPTIONS = $(CFLAGS)
+FLAGS = -Wall -Wextra -std=c99 -I$(HEADERSDIR)
+OPTIONS = $(FLAGS) $(GTK_FLAGS)
 CC = gcc
 EXECUTABLE = simparticles
 GTK_EXEC = simparticles_gtk
 
 HEADERS = $(wildcard $(HEADERSDIR)/*.h)
-OBJECTS_NEEDED = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(wildcard $(SRCDIR)/*.c))
+ALL_OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(wildcard $(SRCDIR)/*.c))
+OBJECTS_NEEDED = $(filter-out $(GTK_FILTEROUT_OBJECTS), $(ALL_OBJECTS))
+GTK_OBJ = $(filter-out $(OBJDIR)/main.o, $(ALL_OBJECTS))
+GTK_FILTEROUT_SRC := $(shell find src -type f -name "*.c" -exec grep -il "gtk" {} +)
+GTK_FILTEROUT_OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(GTK_FILTEROUT_SRC))
 
-GTK_SRC = src/main_gtk.c src/app.c src/controller.c src/options.c
-GTK_OBJ = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(GTK_SRC))
 GTK_FLAGS = `pkg-config --cflags gtk+-3.0`
-GTK_LIBS  = `pkg-config --libs gtk+-3.0` -lm
+GTK_LIBS  = `pkg-config --libs gtk+-3.0`
 
 # Variable to modify to enable or disable debug : leave empty or add -g
 DEBUG = -g
 # Variable to add library if needed, like maths with -lm
 LIBRARIES = -lm
 
-.PHONY: all clean mrproper build run valgrind docs
+.PHONY: all clean mrproper build run valgrind docs build-gtk run-gtk
 
 all: build run
 
@@ -51,15 +53,15 @@ valgrind: $(BINDIR)/$(EXECUTABLE)
 docs:
 	cd docs && doxygen Doxyfile
 
-gtk: $(BINDIR)/$(GTK_EXEC)
+build-gtk: $(BINDIR)/$(GTK_EXEC)
 
-run-gtk: gtk
-	@mkdir -p $(IMAGESDIR)
+run-gtk: $(BINDIR)/$(GTK_EXEC)
+	@mkdir -p $(BINDIR)
 	@./$(BINDIR)/$(GTK_EXEC)
 
 $(BINDIR)/$(GTK_EXEC): $(GTK_OBJ)
 	@mkdir -p $(BINDIR)
-	$(CC) $(OPTIONS) $(GTK_FLAGS) $(DEBUG) -o $@ $^ $(GTK_LIBS)
+	$(CC) $(OPTIONS) $(DEBUG) -o $@ $^ $(LIBRARIES) $(GTK_LIBS)
 
 $(BINDIR)/$(EXECUTABLE) : $(OBJECTS_NEEDED)
 	@mkdir -p $(BINDIR)
