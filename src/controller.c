@@ -2,43 +2,76 @@
 #include <stdlib.h>
 #include "controller.h"
 #include "app.h"
+#include "options.h"
+
+int parse_float_safe(const char *text, float *out){
+	if(text == NULL){
+		return 0;
+	}
+    char *endptr;
+    float value = strtof(text, &endptr);
+
+    if (endptr == text || *endptr != '\0'){
+        return 0;
+	}
+	if (value <= 0.0) {
+		return 0;
+	}
+    *out = value;
+    return 1;
+}
+
+int parse_int_safe(const char *text, int *out){
+	if(text == NULL){
+		return 0;
+	}
+    char *endptr;
+    int value = (int) strtol(text, &endptr, 0);
+
+    if (endptr == text || *endptr != '\0'){
+        return 0;
+	}
+	if (value <= 0) {
+		return 0;
+	}
+    *out = value;
+    return 1;
+}
 
 static int sync_parameters_environment(AppData *data){
-	float p_nb,w,h,d,r,tps_iter;
+	options opts = data->opts;
 
-	if (!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_particle_nb)), &p_nb) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_width)), &w) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_height)), &h) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_depth)), &d) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_r)), &r) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_iter_t)), &tps_iter)){
+	if (!parse_int_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_particle_nb)), &opts->particle_nb) ||
+		!parse_int_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_width)), &opts->w) ||
+		!parse_int_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_height)), &opts->h) ||
+		!parse_int_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_depth)), &opts->d) ||
+		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_r)), &opts->radius) ||
+		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_iter_t)), &opts->iteration_t)){
 		show_error_dialog(GTK_WINDOW(data->window),"Entrée invalide (valeurs numériques attendues) ou vide");
 		return -1;
-		}else{
-			return 0;
-		}
+	}
+	return 0;
 }
 
 static int sync_parameters_camera(AppData *data){
 	float cam_x,cam_y,cam_z,cam_dir_x,cam_dir_y,cam_dir_z;
+	options opts = data->opts;
 
-	if (!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_x)), &cam_x) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_y)), &cam_y) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_z)), &cam_z) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_dir_x)), &cam_dir_x) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_dir_y)), &cam_dir_y) ||
-		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_dir_z)), &cam_dir_z)){
+	if (!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_x)), &opts->cam_x) ||
+		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_y)), &opts->cam_y) ||
+		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_z)), &opts->cam_z) ||
+		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_dir_x)), &opts->cam_dir_x) ||
+		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_dir_y)), &opts->cam_dir_y) ||
+		!parse_float_safe(gtk_entry_get_text(GTK_ENTRY(data->entry_cam_dir_z)), &opts->cam_dir_z)){
 		show_error_dialog(GTK_WINDOW(data->window),"Entrée invalide (valeurs numériques attendues) ou vide");
 		return -1;
-		}else{
-			return 0;
-		}
-
+	}
 	GtkAllocation allocation;
 	gtk_widget_get_allocation(data->render_area,&allocation);
 	const int width_render_area = allocation.width;
 	const int height_render_area = allocation.height;
 	printf("%d %d\n",width_render_area, height_render_area);
+	return 0;
 }
 
 void on_next(GtkButton *btn, gpointer user_data){
@@ -103,16 +136,3 @@ void show_error_dialog(GtkWindow *parent, const char *msg){
     gtk_widget_destroy(d);
 }
 
-int parse_float_safe(const char *text, float *out){
-	if(text == NULL){
-		return 0;
-	}
-    char *endptr;
-    float value = strtof(text, &endptr);
-
-    if (endptr == text || *endptr != '\0'){
-        return 0;
-	}
-    *out = value;
-    return 1;
-}
