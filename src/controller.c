@@ -47,7 +47,7 @@ void on_next(GtkButton *btn, gpointer user_data){
 
 	int sync = sync_parameters_camera(app);
 
-	if(sync !=0){
+	if(sync !=-1){
 		//ok
 	}else{
 		//do nothing
@@ -62,7 +62,7 @@ void on_create(GtkButton *btn, gpointer user_data){
 	
 	int sync = sync_parameters_environment(app);
 	
-	if(sync !=0){
+	if(sync !=-1){
 		//ok
 	}else{
 		//do nothing
