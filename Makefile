@@ -13,7 +13,7 @@ GTK_EXEC = simparticles_gtk
 HEADERS = $(wildcard $(HEADERSDIR)/*.h)
 OBJECTS_NEEDED = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(wildcard $(SRCDIR)/*.c))
 
-GTK_SRC = src/main_gtk.c src/app.c src/controller.c
+GTK_SRC = src/main_gtk.c src/app.c src/controller.c src/options.c
 GTK_OBJ = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(GTK_SRC))
 GTK_FLAGS = `pkg-config --cflags gtk+-3.0`
 GTK_LIBS  = `pkg-config --libs gtk+-3.0` -lm

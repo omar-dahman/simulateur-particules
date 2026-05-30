@@ -1,5 +1,6 @@
 #include "app.h"
 #include "controller.h"
+#include "options.h"
 
 static GtkWidget *create_label_entry(char *label_text, GtkWidget **out_entry){
 	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,5);
@@ -182,6 +183,9 @@ void open_camera_option(AppData *data,int move){
 
 AppData *app_create(GtkApplication *gtk_app){
     AppData *data = g_malloc(sizeof(AppData));
+
+	//options struct
+	data->opts = init_empty_options();
 
 	//window
     data->window = gtk_application_window_new(gtk_app);

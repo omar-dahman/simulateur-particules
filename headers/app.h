@@ -2,6 +2,7 @@
 #define APP_H
 
 #include <gtk/gtk.h>
+#include "options.h"
 
 typedef struct {
     GtkWidget *window;
@@ -15,6 +16,7 @@ typedef struct {
 	GtkWidget *render_area;
     GtkWidget *entry_cam_movement;
     GtkWidget *btn_validate_cam_m;
+    options opts;
 } AppData;
 
 AppData *app_create(GtkApplication *app);
