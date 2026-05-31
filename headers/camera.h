@@ -176,4 +176,12 @@ void camera_rotate_pitch(Camera *cam, float angle);
 
 void camera_print(const Camera *cam);
 
+
+
+/**
+ * @brief Update camera width and height
+ * @note Added for Tâche H.1
+ */
+void camera_size_update(Camera *cam, int width, int height);
+
 #endif /* CAMERA_H */

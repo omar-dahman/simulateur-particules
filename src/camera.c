@@ -399,3 +399,9 @@ void camera_print(const Camera *cam)
     /* Ligne de séparation */
     printf("╚══════════════════════════════════════════════════════════════════╝\n\n");
 }
+
+//Added for Tâche H.1
+void camera_size_update(Camera *cam, int width, int height) {
+    cam->height = height;
+    cam->width = width;
+}
