@@ -3,6 +3,8 @@
 
 #include <gtk/gtk.h>
 #include "options.h"
+#include "environnement.h"
+#include "camera.h"
 
 typedef struct {
     GtkWidget *window;
@@ -17,6 +19,8 @@ typedef struct {
     GtkWidget *entry_cam_movement;
     GtkWidget *btn_validate_cam_m;
     options opts;
+    env environnement;
+    Camera cam;
 } AppData;
 
 AppData *app_create(GtkApplication *app);

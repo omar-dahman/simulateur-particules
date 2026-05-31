@@ -48,7 +48,7 @@ void open_camera_option(AppData *data,int move){
 				    gtk_widget_destroy(dialog);
 			        return;
 			    }
-			    on_validate_translation(x, y, z, speed);
+			    on_validate_translation(data, x, y, z, speed);
             }
             break;
 		
@@ -90,7 +90,7 @@ void open_camera_option(AppData *data,int move){
 					gtk_widget_destroy(dialog);
 					return;
 				}
-				on_validate_orbit(cx, cy, cz, r, w, e);
+				on_validate_orbit(data, cx, cy, cz, r, w, e);
 			}
 			break;
 		
@@ -128,7 +128,7 @@ void open_camera_option(AppData *data,int move){
 					gtk_widget_destroy(dialog);
 					return;
 				}
-				on_validate_fly(tx, ty, tz, sp, tr);
+				on_validate_fly(data, tx, ty, tz, sp, tr);
 			}
 			break;
 
@@ -170,7 +170,7 @@ void open_camera_option(AppData *data,int move){
 					gtk_widget_destroy(dialog);
 					return;
 				}
-				on_validate_pendulum(px, py, pz, r, a, f);
+				on_validate_pendulum(data, px, py, pz, r, a, f);
 			}
 			break;
 
@@ -186,6 +186,9 @@ AppData *app_create(GtkApplication *gtk_app){
 
 	//options struct
 	data->opts = init_empty_options();
+
+    //env struct
+    data->environnement = NULL;
 
 	//window
     data->window = gtk_application_window_new(gtk_app);
