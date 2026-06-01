@@ -1,3 +1,9 @@
+/**
+ * \file app.c
+ * \author Nell TELECHEA
+ * \brief Implementing app.h
+ */ 
+
 #include "app.h"
 #include "controller.h"
 #include "options.h"

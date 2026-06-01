@@ -1,3 +1,9 @@
+/**
+ * \file controller.c
+ * \author Nell TELECHEA
+ * \brief Implementing controller.h
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "controller.h"
