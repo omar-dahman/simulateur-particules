@@ -17,7 +17,7 @@ int parse_float_safe(const char *text, float *out){
     if (endptr == text || *endptr != '\0'){
         return 0;
 	}
-	if (value <= 0.0) {
+	if (value < 0.0) {
 		return 0;
 	}
     *out = value;
@@ -74,11 +74,6 @@ static int sync_parameters_camera(AppData *data){
 		show_error_dialog(GTK_WINDOW(data->window),"Entrée invalide (valeurs numériques attendues) ou vide");
 		return -1;
 	}
-	GtkAllocation allocation;
-	gtk_widget_get_allocation(data->render_area,&allocation);
-	const int width_render_area = allocation.width;
-	const int height_render_area = allocation.height;
-	printf("%d %d\n",width_render_area, height_render_area);
 	if (sum < 1e-6f) { // check for initialization
 		return 1;
 	}
@@ -102,12 +97,10 @@ void on_next(GtkButton *btn, gpointer user_data){
 		} else {
 			camera_update(&app->cam);
 		}
-		//TODO : signal the render area to render
+		gtk_widget_queue_draw(app->render_area);
 	}else{
 		//do nothing
 	}
-
-    printf("Iteration avancée\n");
 }
 
 void on_create(GtkButton *btn, gpointer user_data){
@@ -120,11 +113,10 @@ void on_create(GtkButton *btn, gpointer user_data){
 	if(sync_env !=-1 && sync_cam!=-1){
 		options opts = app->opts;
 		app->environnement = create_environnement(opts->particle_nb, opts->w, opts->h, opts->d, opts->radius, opts->iteration_t);
-		//TODO : signal the render area to render
+		gtk_widget_queue_draw(app->render_area);
 	}else{
 		//do nothing
 	}
-    printf("Create environnement\n");
 }
 
 void on_validate_movement(GtkButton *btn, gpointer user_data){
@@ -132,7 +124,6 @@ void on_validate_movement(GtkButton *btn, gpointer user_data){
 	AppData *app = (AppData *)user_data;
 	const char *movement_cam_text  = gtk_entry_get_text(GTK_ENTRY(app->entry_cam_movement));
 	int movement = atoi(movement_cam_text);
-	printf("%d\n",movement);
 	if(movement!=0){
 		open_camera_option(app,movement);
 	} else {
@@ -149,7 +140,6 @@ void on_validate_translation(AppData *app, float dir_x,float dir_y,float dir_z,f
 	opts->trans_dir_z = dir_z;
 	opts->trans_speed = speed;
 	camera_set_move_translate(&app->cam, dir, speed);
-	printf("Translation: %f %f %f %f\n", dir_x, dir_y, dir_z, speed);
 }
 
 void on_validate_orbit(AppData *app, float center_x, float center_y, float center_z, float radius, float speed, float elevation){
@@ -163,7 +153,6 @@ void on_validate_orbit(AppData *app, float center_x, float center_y, float cente
 	opts->orbit_angular_speed = speed;
 	opts->orbit_elevation = elevation;
 	camera_set_move_orbit(&app->cam, center, radius, speed, elevation);
-	printf("orbit\n");
 }
 
 void on_validate_fly(AppData *app, float target_x, float target_y, float target_z, float speed, float turn_rate){
@@ -176,7 +165,6 @@ void on_validate_fly(AppData *app, float target_x, float target_y, float target_
 	opts->fly_speed = speed;
 	opts->fly_turn_rate = turn_rate;
 	camera_set_move_fly(&app->cam, target, speed, turn_rate);
-	printf("fly\n");
 }
 
 void on_validate_pendulum(AppData *app, float pivot_x, float pivot_y, float pivot_z, float radius, float amplitude, float frequency){
@@ -190,7 +178,6 @@ void on_validate_pendulum(AppData *app, float pivot_x, float pivot_y, float pivo
 	opts->pend_amplitude = amplitude;
 	opts->pend_frequency = frequency;
 	camera_set_move_pendulum(&app->cam, pivot, radius, amplitude, frequency);
-	printf("pendulum\n");
 }
 
 void show_error_dialog(GtkWindow *parent, const char *msg){

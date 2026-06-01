@@ -100,4 +100,10 @@ void snapshot(env environnement, char *path, int wp, int hp, Camera* cam);
  */
 void animate(env environnement, char *path, int wp, int hp, int t, Camera* cam);
 
+/**
+ * @brief render the environement as an array of pixels according to the camera
+ * @note lower level exposed for usage in the gtk render
+ * @note definition header added for task H.1
+ */
+short* render_3d(int hd, int wd, env e, Camera* cam);
 #endif 

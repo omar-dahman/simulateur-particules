@@ -1,6 +1,7 @@
 #include "app.h"
 #include "controller.h"
 #include "options.h"
+#include "gtk_particle_renderer.h"
 
 static GtkWidget *create_label_entry(char *label_text, GtkWidget **out_entry){
 	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,5);
@@ -252,7 +253,8 @@ AppData *app_create(GtkApplication *gtk_app){
 	gtk_box_pack_start(GTK_BOX(data->main_box),data->control_bar,FALSE,FALSE,5);
 
 	//rendu
-	data->render_area = gtk_frame_new("Rendu");
+	data->render_area = gtk_drawing_area_new();
+    g_signal_connect(data->render_area, "draw", G_CALLBACK(particle_draw), data);
 	gtk_box_pack_start(GTK_BOX(data->main_box),data->render_area,TRUE,TRUE,5);
 
 	//controller handling

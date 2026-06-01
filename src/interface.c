@@ -116,7 +116,7 @@ short* render_3d(int hd, int wd, env e, Camera* cam) {
         int px, py;
         vec3 pos = vec3_make(get_x(p), get_y(p), get_z(p));
         if (camera_is_particle_visible(cam, pos, &px, &py)==1) {
-            render[px*wd+py]=1;
+            render[py * wd + px] = 1;
         }
     }
     return render;
