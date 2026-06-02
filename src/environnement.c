@@ -45,8 +45,29 @@ struct env_structure {
     particule *particules; /**< array of particles */
     attractor *objects;    /**< attractors/repulsors present * ADDED FOR LOT E (Tâche E.5) */
     int object_count; /**< Number of objects (attractors/repulsors) present  ADDED FOR LOT E (Tâche E.5) */
+    Obstacle *obstacles;   /**< Array of static obstacles */
+    int obstacle_count;    /**< Number of obstacles in the environment */
 };
 
+/**
+ * \brief Returns the number of obstacles in the environment
+ */
+int get_obstacle_count(env e)
+{
+    if (!e)
+        return 0;
+    return e->obstacle_count;
+}
+
+/**
+ * \brief Returns a pointer to the obstacle at the given index
+ */
+const Obstacle *get_obstacle(env e, int index)
+{
+    if (!e || index < 0 || index >= e->obstacle_count)
+        return NULL;
+    return &e->obstacles[index];
+}
 
 env create_environnement(int n, float w, float h, float d, float r, float dt) {
     /* MODIFIED FOR LOT E (Tâche E.2): added parameter d */
@@ -94,6 +115,7 @@ void free_environnement(env e) {
     }
     free(e->particules);
     free(e->objects); /* ADDED FOR LOT E (Tâche E.5) */
+    free(e->obstacles); /* Free obstacles array (added for Lot H.4) */
     free(e);
 }
 
@@ -115,6 +137,21 @@ void add_attractor(env e, vec3 position, float strength) {
     e->objects[e->object_count].position = position;
     e->objects[e->object_count].strength = strength;
     e->object_count++;
+}
+
+/**
+ * \brief Adds a static obstacle to the environment
+ * \param e        Environment pointer
+ * \param obstacle The obstacle to add (will be copied)
+ */
+void add_obstacle(env e, Obstacle obstacle)
+{
+    Obstacle *tmp = realloc(e->obstacles, (e->obstacle_count + 1) * sizeof(Obstacle));
+    if (!tmp)
+        return; /* Allocation failed, keep old array */
+    e->obstacles = tmp;
+    e->obstacles[e->obstacle_count] = obstacle;
+    e->obstacle_count++;
 }
 
 int get_n(env e) {
@@ -301,6 +338,139 @@ static vec3 attractor_force(particule p, attractor a) {
     return vec3_scale(dir, strength);
 }
 
+/**
+ * \brief Handles collision between a particle and a spherical obstacle
+ * \param p   Particle to check
+ * \param obs Obstacle (must be SPHERE type)
+ * \param dt  Time step (unused, kept for consistency)
+ * \return 1 if collision occurred, 0 otherwise
+ */
+static int handle_sphere_collision(particule p, Obstacle *obs, float dt)
+{
+    (void)dt; /* Not needed for sphere collision resolution */
+
+    vec3 pos = get_pos(p);
+    vec3 vel = get_vel(p);
+    vec3 to_particle = vec3_sub(pos, obs->position);
+    float dist = vec3_norm(to_particle);
+    float radius = obs->radius;
+
+    /* Check if particle penetrates the sphere */
+    if (dist < radius)
+    {
+        /* Move particle to surface */
+        vec3 dir = vec3_normalize(to_particle);
+        vec3 new_pos = vec3_add(obs->position, vec3_scale(dir, radius));
+        set_position(p, new_pos.x, new_pos.y, new_pos.z);
+
+        /* Reflect velocity component along normal */
+        float vn = vec3_dot(vel, dir);
+        vec3 new_vel = vec3_sub(vel, vec3_scale(dir, (1.0f + obs->restitution) * vn));
+        set_speed(p, new_vel.x, new_vel.y, new_vel.z);
+        return 1;
+    }
+    return 0;
+}
+
+/**
+ * \brief Handles collision between a particle and a plane obstacle
+ * \param p   Particle to check
+ * \param obs Obstacle (must be PLANE type)
+ * \param dt  Time step (unused)
+ * \return 1 if collision occurred, 0 otherwise
+ */
+static int handle_plane_collision(particule p, Obstacle *obs, float dt)
+{
+    (void)dt;
+
+    vec3 pos = get_pos(p);
+    vec3 vel = get_vel(p);
+    vec3 n = obs->normal;
+    vec3 point_on_plane = obs->position;
+
+    /* Signed distance from particle to plane (negative = inside forbidden side) */
+    float signed_dist = vec3_dot(vec3_sub(pos, point_on_plane), n);
+
+    if (signed_dist < 0.0f)
+    {
+        /* Move particle back to plane surface */
+        vec3 new_pos = vec3_sub(pos, vec3_scale(n, signed_dist));
+        set_position(p, new_pos.x, new_pos.y, new_pos.z);
+
+        /* Reflect velocity */
+        float vn = vec3_dot(vel, n);
+        vec3 new_vel = vec3_sub(vel, vec3_scale(n, (1.0f + obs->restitution) * vn));
+        set_speed(p, new_vel.x, new_vel.y, new_vel.z);
+        return 1;
+    }
+    return 0;
+}
+
+/**
+ * \brief Handles collision between a particle and an axis-aligned box obstacle
+ * \param p   Particle to check
+ * \param obs Obstacle (must be BOX type)
+ * \param dt  Time step (unused)
+ * \return 1 if collision occurred, 0 otherwise
+ */
+static int handle_box_collision(particule p, Obstacle *obs, float dt)
+{
+    (void)dt;
+
+    vec3 pos = get_pos(p);
+    vec3 vel = get_vel(p);
+    vec3 center = obs->position;
+    vec3 half = obs->half_size;
+    int collided = 0;
+
+    /* Check and resolve each axis independently */
+    if (pos.x < center.x - half.x)
+    {
+        pos.x = center.x - half.x;
+        vel.x = -vel.x * obs->restitution;
+        collided = 1;
+    }
+    else if (pos.x > center.x + half.x)
+    {
+        pos.x = center.x + half.x;
+        vel.x = -vel.x * obs->restitution;
+        collided = 1;
+    }
+
+    if (pos.y < center.y - half.y)
+    {
+        pos.y = center.y - half.y;
+        vel.y = -vel.y * obs->restitution;
+        collided = 1;
+    }
+    else if (pos.y > center.y + half.y)
+    {
+        pos.y = center.y + half.y;
+        vel.y = -vel.y * obs->restitution;
+        collided = 1;
+    }
+
+    if (pos.z < center.z - half.z)
+    {
+        pos.z = center.z - half.z;
+        vel.z = -vel.z * obs->restitution;
+        collided = 1;
+    }
+    else if (pos.z > center.z + half.z)
+    {
+        pos.z = center.z + half.z;
+        vel.z = -vel.z * obs->restitution;
+        collided = 1;
+    }
+
+    if (collided)
+    {
+        set_position(p, pos.x, pos.y, pos.z);
+        set_speed(p, vel.x, vel.y, vel.z);
+    }
+    return collided;
+}
+
 void move_particules(env e) {
     int   env_n  = get_n(e);
     float env_dt = get_dt(e);
@@ -346,5 +516,24 @@ void move_particules(env e) {
         move(p, env_dt);
         border_collision_handler(p, env_w, env_h, env_d, get_x(p), get_y(p), get_z(p));
         /* MODIFIED FOR LOT E (Tâche E.2): now passes get_z and env_d */
+        /* Handle collisions with static obstacles (added for Lot H.4) */
+        for (int k = 0; k < e->obstacle_count; k++)
+        {
+            Obstacle *obs = &e->obstacles[k];
+            switch (obs->type)
+            {
+            case OBSTACLE_SPHERE:
+                handle_sphere_collision(p, obs, env_dt);
+                break;
+            case OBSTACLE_PLANE:
+                handle_plane_collision(p, obs, env_dt);
+                break;
+            case OBSTACLE_BOX:
+                handle_box_collision(p, obs, env_dt);
+                break;
+            default:
+                break;
+            }
+        }
     }
 }

@@ -35,6 +35,20 @@ typedef struct {
     env environnement;
     Camera cam;
     float camera_values_sum;
+    /* Obstacle UI elements (added for Lot H.4) */
+    GtkWidget *obs_type_combo;        /**< Dropdown for obstacle type selection */
+    GtkWidget *entry_obs_x;           /**< X position input field */
+    GtkWidget *entry_obs_y;           /**< Y position input field */
+    GtkWidget *entry_obs_z;           /**< Z position input field */
+    GtkWidget *entry_obs_radius;      /**< Radius input field (for sphere) */
+    GtkWidget *entry_obs_nx;          /**< Normal X input field (for plane) */
+    GtkWidget *entry_obs_ny;          /**< Normal Y input field (for plane) */
+    GtkWidget *entry_obs_nz;          /**< Normal Z input field (for plane) */
+    GtkWidget *entry_obs_hx;          /**< Half-size X input field (for box) */
+    GtkWidget *entry_obs_hy;          /**< Half-size Y input field (for box) */
+    GtkWidget *entry_obs_hz;          /**< Half-size Z input field (for box) */
+    GtkWidget *entry_obs_restitution; /**< Restitution coefficient (0 = sticky, 1 = elastic) */
+    GtkWidget *btn_add_obstacle;      /**< Button to add obstacle to environment */
 } AppData;
 
 /**

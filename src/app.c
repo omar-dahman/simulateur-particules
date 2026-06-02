@@ -225,6 +225,88 @@ AppData *app_create(GtkApplication *gtk_app){
 	GtkWidget *sim_group = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	GtkWidget *iter_group = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	GtkWidget *cam_group  = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	/* ----- Obstacle Group (added for Lot H.4) ----- */
+	GtkWidget *obs_group = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	gtk_box_set_homogeneous(GTK_BOX(obs_group), FALSE);
+
+	/* Title for obstacle section */
+	GtkWidget *obs_title = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(obs_title), "<b>Obstacles</b>");
+
+	/* Obstacle type selector (dropdown) */
+	GtkWidget *obs_type_label = gtk_label_new("Type d'obstacle:");
+	data->obs_type_combo = gtk_combo_box_text_new();
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(data->obs_type_combo), "Sphere");
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(data->obs_type_combo), "Plane");
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(data->obs_type_combo), "Box");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(data->obs_type_combo), 0);
+
+	/* Position fields (common to all obstacle types) */
+	GtkWidget *obs_x_box = create_label_entry("Position X:", &data->entry_obs_x);
+	GtkWidget *obs_y_box = create_label_entry("Position Y:", &data->entry_obs_y);
+	GtkWidget *obs_z_box = create_label_entry("Position Z:", &data->entry_obs_z);
+
+	/* Sphere-specific fields */
+	GtkWidget *obs_radius_label = gtk_label_new("Sphere parameters:");
+	GtkWidget *obs_radius_box = create_label_entry("  Rayon:", &data->entry_obs_radius);
+
+	/* Plane-specific fields */
+	GtkWidget *obs_normal_label = gtk_label_new("Plane parameters:");
+	GtkWidget *obs_nx_box = create_label_entry("  Normale X:", &data->entry_obs_nx);
+	GtkWidget *obs_ny_box = create_label_entry("  Normale Y:", &data->entry_obs_ny);
+	GtkWidget *obs_nz_box = create_label_entry("  Normale Z:", &data->entry_obs_nz);
+
+	/* Box-specific fields */
+	GtkWidget *obs_halfsize_label = gtk_label_new("Box parameters:");
+	GtkWidget *obs_hx_box = create_label_entry("  Demi-largeur X:", &data->entry_obs_hx);
+	GtkWidget *obs_hy_box = create_label_entry("  Demi-largeur Y:", &data->entry_obs_hy);
+	GtkWidget *obs_hz_box = create_label_entry("  Demi-largeur Z:", &data->entry_obs_hz);
+
+	/* Common fields */
+	GtkWidget *obs_restitution_box = create_label_entry("Restitution (0=sticky, 1=elastic):", &data->entry_obs_restitution);
+
+	/* Set default values for convenience */
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_x), "50");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_y), "50");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_z), "50");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_radius), "15");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_nx), "0");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_ny), "1");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_nz), "0");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_hx), "20");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_hy), "10");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_hz), "10");
+	gtk_entry_set_text(GTK_ENTRY(data->entry_obs_restitution), "0.8");
+
+	/* Add obstacle button */
+	data->btn_add_obstacle = gtk_button_new_with_label("➕ Ajouter obstacle");
+
+	/* Pack all widgets into obstacle group */
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_title, FALSE, FALSE, 5);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_type_label, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), data->obs_type_combo, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_x_box, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_y_box, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_z_box, FALSE, FALSE, 2);
+
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_radius_label, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_radius_box, FALSE, FALSE, 2);
+
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_normal_label, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_nx_box, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_ny_box, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_nz_box, FALSE, FALSE, 2);
+
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_halfsize_label, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_hx_box, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_hy_box, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_hz_box, FALSE, FALSE, 2);
+
+	gtk_box_pack_start(GTK_BOX(obs_group), obs_restitution_box, FALSE, FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(obs_group), data->btn_add_obstacle, FALSE, FALSE, 5);
+
+	/* Add obstacle group to control bar */
+	gtk_box_pack_start(GTK_BOX(data->control_bar), obs_group, FALSE, FALSE, 10);
 
 	gtk_box_pack_start(GTK_BOX(data->control_bar), sim_group, FALSE, FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(data->control_bar), iter_group, FALSE, FALSE, 10);
@@ -268,8 +350,9 @@ AppData *app_create(GtkApplication *gtk_app){
     g_signal_connect(data->btn_next_iter,"clicked",G_CALLBACK(on_next),data);
 	g_signal_connect(data->btn_create,"clicked",G_CALLBACK(on_create),data);
 	g_signal_connect(data->btn_validate_cam_m,"clicked",G_CALLBACK(on_validate_movement),data);
-    
-    gtk_widget_show_all(data->window);
+	g_signal_connect(data->btn_add_obstacle, "clicked", G_CALLBACK(on_add_obstacle), data);
+
+	gtk_widget_show_all(data->window);
 
     return data;
 }

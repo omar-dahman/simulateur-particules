@@ -14,6 +14,13 @@
 #include "app.h" /*The interface*/
 
 /**
+ * \brief Callback for the "Add obstacle" button
+ * \param btn The button that was clicked
+ * \param user_data Pointer to AppData structure
+ */
+void on_add_obstacle(GtkButton *btn, gpointer user_data);
+
+/**
  * \brief Advances the simulation by one iteration.
  * \param btn The button that triggered the callback.
  * \param user_data The pointer to the current application data.

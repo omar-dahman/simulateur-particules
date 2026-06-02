@@ -38,6 +38,54 @@ typedef struct attractor_s {
 } attractor;
 
 /**
+ * \brief Types of obstacles that can be placed in the environment
+ */
+typedef enum
+{
+    OBSTACLE_PLANE,  /**< Infinite plane (or half-space) */
+    OBSTACLE_SPHERE, /**< Sphere with a given radius */
+    OBSTACLE_BOX     /**< Axis-aligned box (parallelepiped) */
+} ObstacleType;
+
+/**
+ * \brief Structure representing a static obstacle in the environment
+ * \details Particles will collide with and bounce off these obstacles.
+ *          The restitution coefficient determines how bouncy the obstacle is:
+ *          - 0.0f : fully inelastic (particle sticks)
+ *          - 1.0f : perfectly elastic (full bounce)
+ */
+typedef struct {
+    ObstacleType type; /**< Type of obstacle (plane, sphere, box) */
+    vec3 position;     /**< Center (sphere/box) or a point on the plane */
+    vec3 normal;       /**< Unit normal vector (for plane obstacle only) */
+    vec3 half_size;    /**< Half-extents in x,y,z (for box obstacle only) */
+    float radius;      /**< Radius (for sphere obstacle only) */
+    float restitution; /**< Bounciness coefficient [0..1] */
+} Obstacle;
+
+/**
+ * \brief Returns the number of obstacles in the environment
+ * \param e Environment pointer
+ * \return Number of obstacles
+ */
+int get_obstacle_count(env e);
+
+/**
+ * \brief Returns a pointer to the obstacle at the given index
+ * \param e Environment pointer
+ * \param index Index of the obstacle (0 to get_obstacle_count()-1)
+ * \return Pointer to the obstacle, or NULL if index is invalid
+ */
+const Obstacle *get_obstacle(env e, int index);
+
+/**
+ * \brief Adds a static obstacle to the environment
+ * \param e        Environment pointer
+ * \param obstacle The obstacle to add (will be copied)
+ */
+void add_obstacle(env e, Obstacle obstacle);
+
+/**
  * \brief   Creates an environment of particles
  * \details Performs a memory allocation for an environment of size w x h x d
  *          for n particles. The particles are all placed at the center of the

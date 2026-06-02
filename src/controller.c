@@ -13,6 +13,123 @@
 #include "camera.h"
 #include "vector.h"
 
+void on_add_obstacle(GtkButton *btn, gpointer user_data)
+{
+	AppData *data = (AppData *)user_data;
+
+	/* Check if environment exists */
+	if (data->environnement == NULL)
+	{
+		show_error_dialog(GTK_WINDOW(data->window),
+						  "Please create the environment first (click 'Create environment')");
+		return;
+	}
+
+	/* Get obstacle type from combo box */
+	int obs_type_idx = gtk_combo_box_get_active(GTK_COMBO_BOX(data->obs_type_combo));
+
+	/* Parse common fields (position and restitution) */
+	float x, y, z, restitution;
+	const char *text_x = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_x));
+	const char *text_y = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_y));
+	const char *text_z = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_z));
+	const char *text_restitution = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_restitution));
+
+	if (!parse_float_safe(text_x, &x) || !parse_float_safe(text_y, &y) ||
+		!parse_float_safe(text_z, &z) || !parse_float_safe(text_restitution, &restitution))
+	{
+		show_error_dialog(GTK_WINDOW(data->window),
+						  "Invalid input: position or restitution must be numeric values");
+		return;
+	}
+
+	/* Clamp restitution to [0, 1] */
+	if (restitution < 0.0f)
+		restitution = 0.0f;
+	if (restitution > 1.0f)
+		restitution = 1.0f;
+
+	/* Initialize obstacle with common fields */
+	Obstacle obs;
+	obs.position = vec3_make(x, y, z);
+	obs.restitution = restitution;
+
+	/* Set obstacle type and type-specific fields */
+	switch (obs_type_idx)
+	{
+	case 0: /* Sphere */
+	{
+		float radius;
+		const char *text_radius = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_radius));
+		if (!parse_float_safe(text_radius, &radius))
+		{
+			show_error_dialog(GTK_WINDOW(data->window), "Invalid radius for sphere obstacle");
+			return;
+		}
+		obs.type = OBSTACLE_SPHERE;
+		obs.radius = radius;
+		break;
+	}
+
+	case 1: /* Plane */
+	{
+		float nx, ny, nz;
+		const char *text_nx = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_nx));
+		const char *text_ny = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_ny));
+		const char *text_nz = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_nz));
+
+		if (!parse_float_safe(text_nx, &nx) || !parse_float_safe(text_ny, &ny) ||
+			!parse_float_safe(text_nz, &nz))
+		{
+			show_error_dialog(GTK_WINDOW(data->window), "Invalid normal vector for plane obstacle");
+			return;
+		}
+
+		obs.type = OBSTACLE_PLANE;
+		obs.normal = vec3_make(nx, ny, nz);
+
+		/* Normalize the normal vector */
+		float len = vec3_norm(obs.normal);
+		if (len < 1e-6f)
+		{
+			show_error_dialog(GTK_WINDOW(data->window), "Normal vector cannot be zero");
+			return;
+		}
+		obs.normal = vec3_scale(obs.normal, 1.0f / len);
+		break;
+	}
+
+	case 2: /* Box */
+	{
+		float hx, hy, hz;
+		const char *text_hx = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_hx));
+		const char *text_hy = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_hy));
+		const char *text_hz = gtk_entry_get_text(GTK_ENTRY(data->entry_obs_hz));
+
+		if (!parse_float_safe(text_hx, &hx) || !parse_float_safe(text_hy, &hy) ||
+			!parse_float_safe(text_hz, &hz))
+		{
+			show_error_dialog(GTK_WINDOW(data->window), "Invalid half-sizes for box obstacle");
+			return;
+		}
+
+		obs.type = OBSTACLE_BOX;
+		obs.half_size = vec3_make(hx, hy, hz);
+		break;
+	}
+
+	default:
+		show_error_dialog(GTK_WINDOW(data->window), "Unknown obstacle type");
+		return;
+	}
+
+	/* Add obstacle to environment */
+	add_obstacle(data->environnement, obs);
+
+	/* Request redraw to show the new obstacle */
+	gtk_widget_queue_draw(data->render_area);
+}
+
 int parse_float_safe(const char *text, float *out){
 	if(text == NULL){
 		return 0;
