@@ -196,6 +196,7 @@ AppData *app_create(GtkApplication *gtk_app){
 
     //env struct
     data->environnement = NULL;
+	data->camera_values_sum = 0;
 
 	//window
     data->window = gtk_application_window_new(gtk_app);

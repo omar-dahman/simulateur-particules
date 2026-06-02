@@ -34,6 +34,7 @@ typedef struct {
     options opts;
     env environnement;
     Camera cam;
+    float camera_values_sum;
 } AppData;
 
 /**

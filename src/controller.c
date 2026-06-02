@@ -62,7 +62,6 @@ static int sync_parameters_environment(AppData *data){
 	return 0;
 }
 
-//TODO : implement old values check to know if the camera needs to be recreated
 /**
  * @return -1 for errors, 0 for no change, 1 for change against old values or on initialization
  */
@@ -80,7 +79,8 @@ static int sync_parameters_camera(AppData *data){
 		show_error_dialog(GTK_WINDOW(data->window),"Entrée invalide (valeurs numériques attendues) ou vide");
 		return -1;
 	}
-	if (sum < 1e-6f) { // check for initialization
+	if (sum < 1e-6f || (sum - data->camera_values_sum) > 1e-6f) { // check for initialization
+		data->camera_values_sum = sum;
 		return 1;
 	}
 	return 0;

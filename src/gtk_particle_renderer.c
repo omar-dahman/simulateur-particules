@@ -10,7 +10,6 @@
 gboolean particle_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     short* render;
     AppData *app = (AppData *)user_data;
-    options opts = app->opts;
     int width = gtk_widget_get_allocated_width(widget) / REDUCING_FACTOR;
     int height = gtk_widget_get_allocated_height(widget)/ REDUCING_FACTOR;
     camera_size_update(&app->cam, width, height);
