@@ -7,11 +7,6 @@ Le programme simule le déplacement, les rebonds et les interactions de particul
 dans un environnement 2D puis 3D, avec calcul des trajectoires, étude statistique
 du système et rendu (console et images `.pbm`).
 
-## Aperçu
-
-![Simulation 2D](images/simulation_2d.png)
-![Simulation 3D](images/simulation_3d.gif)
-
 ## Équipe
 
 Projet réalisé en groupe (groupe 22) :
