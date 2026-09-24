@@ -1,13 +1,15 @@
-# Simulateur de particules dans un environnement
+# Particle Simulator in an Environment
 
-Projet de programmation impérative en **C** (module PRIN12 — ENSIIE, 2ᵉ semestre).
-Le programme simule le déplacement, les rebonds et les interactions de particules
-dans un environnement 2D puis 3D, avec calcul des trajectoires, étude statistique
-du système et rendu (console et images `.pbm`).
+🇬🇧 English | [🇫🇷 Français](README.fr.md)
 
-## Équipe
+Imperative programming project in **C** (PRIN12 course — ENSIIE, 2nd semester).
+The program simulates the movement, bounces and interactions of particles
+in a 2D and then 3D environment, with trajectory computation, statistical
+analysis of the system and rendering (console output and `.pbm` images).
 
-Projet réalisé en groupe (groupe 22) :
+## Team
+
+Group project (group 22):
 
 - **Omar Dahman**
 - Othmane Chaoui
@@ -15,46 +17,54 @@ Projet réalisé en groupe (groupe 22) :
 - Nell Telechea
 - Maxence Raymond
 
-Encadrant : M. Dimitri Watel.
+Supervisor: Dimitri Watel.
 
-## Organisation du dépôt
+## Repository structure
 
-Le travail est découpé en **lots** (A → I), chacun développé sur sa propre branche
-Git. La branche `main` sert d'amorce ; le code et les rapports de chaque lot se
-trouvent dans les branches correspondantes :
+The work is split into **work packages** (*lots* A → I), each developed on its own
+Git branch. The `main` branch contains the starter code; the code and reports for
+each package are on the corresponding branches:
 
-| Branche | Lot |
-|---------|-----|
-| `lot_a` | Amorce, distributions aléatoires, structures de base |
-| `lot_b` | Génération et distributions des particules |
-| `lot_c` | Physique des rebonds et étude probabiliste des trajectoires |
-| `lot_d` | Simulation et rédaction d'article |
-| `lot_e` | Passage en 3D (vecteurs) |
-| `lot_f` | Extensions et article associé |
+| Branch | Work package |
+|--------|--------------|
+| `lot_a` | Starter code, random distributions, core data structures |
+| `lot_b` | Particle generation and distributions |
+| `lot_c` | Bounce physics and probabilistic study of trajectories |
+| `lot_d` | Simulation and scientific paper writing |
+| `lot_e` | Moving to 3D (vectors) |
+| `lot_f` | Extensions and related paper |
 | `lot_g` | Extensions |
-| `lot_h` | Rapport |
-| `lot_i` | Réseau d'interactions par la théorie des graphes |
+| `lot_h` | Report |
+| `lot_i` | Interaction network using graph theory |
 
-> Pour explorer un lot : `git checkout lot_c` (par exemple).
+## Getting started
 
-## Ma contribution (Omar Dahman)
+```bash
+git clone https://github.com/omar-dahman/REPO-NAME.git
+cd REPO-NAME
+git checkout lot_i      # or any other work package
+make
+./simulation
+```
 
-Contributions réparties sur plusieurs lots :
+## My contribution (Omar Dahman)
 
-- **Distributions aléatoires** — `distributions.h` / `distributions.c` (lots A et B).
-- **Physique des rebonds** — réflexion vectorielle (mur vertical, mur incliné, coin)
-  et **étude probabiliste des trajectoires** (marche aléatoire : espérance nulle,
-  variance `E[|pₙ|²] = n`, comportement diffusif) — lot C.
-- **Passage en 3D** — `vector.h` / `vector.c` et adaptation du code existant (lot E).
-- **Théorie des graphes** — modélisation du réseau d'interactions entre particules
-  (degré moyen, modèle d'Erdős–Rényi, rayon critique de connexité) — lot I.
-- **Rédaction scientifique** — articles et rapports des lots D, F, H et I.
+Contributions across several work packages:
 
-## Outils & technologies
+- **Random distributions** — `distributions.h` / `distributions.c` (packages A and B).
+- **Bounce physics** — vector reflection (vertical wall, sloped wall, corner)
+  and **probabilistic study of trajectories** (random walk: zero expectation,
+  variance `E[|pₙ|²] = n`, diffusive behavior) — package C.
+- **Moving to 3D** — `vector.h` / `vector.c` and adaptation of the existing code (package E).
+- **Graph theory** — modeling the interaction network between particles
+  (average degree, Erdős–Rényi model, critical connectivity radius) — package I.
+- **Scientific writing** — papers and reports for packages D, F, H and I.
 
-- Langage **C**
-- **Valgrind** (détection de fuites mémoire)
-- **CUnit** (tests unitaires)
+## Tools & technologies
+
+- **C** language
+- **Valgrind** (memory leak detection)
+- **CUnit** (unit testing)
 - **Doxygen** (documentation)
-- **GanttProject** (gestion de projet)
-- **Git** (travail collaboratif par branches)
+- **GanttProject** (project management)
+- **Git** (team collaboration with branches)
